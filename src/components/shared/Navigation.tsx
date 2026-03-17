@@ -43,7 +43,7 @@ export function Navigation() {
       <aside className="hidden md:flex flex-col w-64 bg-zinc-900 text-zinc-400 fixed inset-y-0 left-0">
         <div className="p-6">
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="bg-[#1B5E20] p-1.5 rounded-lg text-white">UAR</span>
+            <span className="bg-[#003399] p-1.5 rounded-lg text-white">UAR</span>
             Colegio Árbitros
           </h1>
         </div>
@@ -58,7 +58,7 @@ export function Navigation() {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium",
                   isActive 
-                    ? "bg-[#1B5E20] text-white" 
+                    ? "bg-[#003399] text-white" 
                     : "hover:bg-zinc-800 hover:text-white"
                 )}
               >
@@ -91,13 +91,13 @@ export function Navigation() {
               className={cn(
                 "flex flex-col items-center justify-center min-w-[70px] gap-1 px-1 py-1 rounded-xl transition-all",
                 isActive 
-                  ? "text-[#1B5E20]" 
+                  ? "text-[#003399]" 
                   : "text-zinc-500"
               )}
             >
               <div className={cn(
                 "p-2 rounded-full transition-all",
-                isActive ? "bg-[#1B5E20]/10" : ""
+                isActive ? "bg-[#003399]/10" : ""
               )}>
                 <item.icon className={cn("h-6 w-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
               </div>

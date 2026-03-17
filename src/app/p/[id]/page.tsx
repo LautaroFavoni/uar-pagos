@@ -59,9 +59,9 @@ export default function ResumenPublicoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-emerald-800">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-blue-800">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-emerald-600" />
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600" />
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Cargando Liquidación...</p>
         </div>
       </div>
@@ -94,20 +94,25 @@ export default function ResumenPublicoPage() {
     <div className="min-h-screen bg-zinc-50/50 p-2 sm:p-4 md:p-8 selection:bg-emerald-100 selection:text-emerald-900">
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-20">
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8 border-zinc-200/60 transition-all">
-           <div className="space-y-4">
-              <div className="bg-emerald-600 inline-block px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-[0.2em] shadow-lg shadow-emerald-100 animate-in fade-in slide-in-from-left-4 duration-500">
-                Oficial UAR | Colegio de Árbitros
+           <div className="flex items-center gap-6">
+              <div className="bg-white p-3 rounded-2xl shadow-xl shadow-blue-100 border border-blue-50">
+                <img src="/uar-logo.png" alt="UAR" className="h-16 w-16 object-contain" />
               </div>
-              <div className="space-y-1">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic text-zinc-900 tracking-tight leading-none group">
-                  Planilla de <span className="text-emerald-600 drop-shadow-sm transition-all hover:text-emerald-500">Pagos</span>
-                </h1>
-                <p className="text-zinc-400 font-bold text-xs sm:text-sm tracking-tight">Liquidación Semanal de Actividades Arbitrales</p>
+              <div className="space-y-4">
+                <div className="bg-[#003399] inline-block px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-[0.2em] shadow-lg shadow-blue-100 animate-in fade-in slide-in-from-left-4 duration-500">
+                  Oficial UAR | Colegio de Árbitros
+                </div>
+                <div className="space-y-1">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic text-zinc-900 tracking-tight leading-none group">
+                    Planilla de <span className="text-[#003399] drop-shadow-sm transition-all hover:text-blue-500">Pagos</span>
+                  </h1>
+                  <p className="text-zinc-400 font-bold text-xs sm:text-sm tracking-tight">Liquidación Semanal de Actividades Arbitrales</p>
+                </div>
               </div>
            </div>
            <div className="bg-white border border-zinc-100 p-3 sm:p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-4 min-w-[180px] self-start md:self-end hover:scale-[1.02] transition-transform cursor-default underline-offset-4">
-              <div className="bg-emerald-50 p-3 rounded-2xl">
-                 <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
+              <div className="bg-blue-50 p-3 rounded-2xl">
+                 <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-[#003399]" />
               </div>
               <div>
                  <span className="text-[9px] font-black text-zinc-400 block tracking-[0.1em] leading-none mb-1">SEMANA / AÑO</span>

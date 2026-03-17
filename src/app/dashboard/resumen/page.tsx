@@ -169,12 +169,17 @@ export default function ResumenPagosPage() {
   return (
     <div className="space-y-8 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h2 className="text-3xl font-black tracking-tight text-[#1B5E20]"> Resumen de Pagos</h2>
-          <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase text-xs mt-1">
-            <Calendar className="h-3 w-3" />
-            Liquidación Semana {semana} — {anio}
-          </div>
+        <div className="flex items-center gap-5">
+           <div className="bg-[#003399] p-3 rounded-2xl shadow-xl shadow-blue-100 italic font-black text-white text-xl">
+              UAR
+           </div>
+           <div>
+            <h2 className="text-3xl font-black tracking-tight text-[#003399]"> Resumen de Pagos</h2>
+            <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase text-xs mt-1">
+              <Calendar className="h-3 w-3" />
+              Liquidación Semana {semana} — {anio}
+            </div>
+           </div>
         </div>
         
         <div className="flex flex-wrap items-center gap-4">
@@ -204,7 +209,7 @@ export default function ResumenPagosPage() {
               <Share2 className="h-4 w-4" /> Compartir Link
             </Button>
             <Button 
-              className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white gap-2 font-bold h-11 px-6 rounded-xl shadow-lg shadow-emerald-200" 
+              className="bg-[#003399] hover:bg-[#003399]/90 text-white gap-2 font-bold h-11 px-6 rounded-xl shadow-lg shadow-blue-200" 
               onClick={handleCerrarSemana}
               disabled={closing || arbitrosIds.length === 0}
             >
@@ -215,7 +220,7 @@ export default function ResumenPagosPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-[#1B5E20] text-emerald-50 p-6 rounded-2xl shadow-xl shadow-[#1B5E20]/20 flex flex-col justify-center">
+        <div className="bg-[#003399] text-blue-50 p-6 rounded-2xl shadow-xl shadow-blue-900/20 flex flex-col justify-center">
           <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Total General de la Semana</span>
           <span className="text-3xl font-black">{formatARS(totalGeneral)}</span>
         </div>
