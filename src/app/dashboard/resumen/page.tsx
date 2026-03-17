@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 
 export default function ResumenPagosPage() {
+  console.log("UAR Dashboard v1.1 - Azul Institucional Sincronizado")
   const [loading, setLoading] = useState(true)
   const [closing, setClosing] = useState(false)
   const [designaciones, setDesignaciones] = useState<Designacion[]>([])
