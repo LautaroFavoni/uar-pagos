@@ -244,6 +244,8 @@ export default function ResumenPagosPage() {
                 arbitroNombre={arbitroNombre}
                 designaciones={arbitroDesignaciones}
                 descuentos={arbitroDescuentos}
+                semana={semana}
+                anio={anio}
                 onAddDescuento={(id) => {
                   setSelectedArbitro({ id, nombre: arbitroNombre, activo: true })
                 }}

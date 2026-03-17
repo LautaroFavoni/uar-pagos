@@ -135,6 +135,8 @@ export default function ResumenPublicoPage() {
                    arbitroNombre={arbName}
                    designaciones={ads}
                    descuentos={dcs}
+                   semana={Number(sPart)}
+                   anio={Number(aPart)}
                    readonly={true}
                  />
                )

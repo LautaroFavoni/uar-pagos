@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Designacion, Descuento } from "@/lib/types"
 import { formatARS } from "@/lib/calculos"
 import { 
@@ -28,6 +28,8 @@ interface FilaArbitroProps {
   onRemoveDescuento?: (id: string) => void
   onRemoveDesignacion?: (id: string) => void
   readonly?: boolean
+  semana: number
+  anio: number
 }
 
 export function FilaArbitro({
@@ -38,25 +40,38 @@ export function FilaArbitro({
   onAddDescuento,
   onRemoveDescuento,
   onRemoveDesignacion,
-  readonly = false
+  readonly = false,
+  semana,
+  anio
 }: FilaArbitroProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [localIsPaid, setLocalIsPaid] = useState(false)
+  
+  useEffect(() => {
+    // Si todas las designaciones están pagadas, el árbitro está pagado
+    const allPaid = designaciones.length > 0 && designaciones.every(d => d.pagado)
+    setLocalIsPaid(allPaid)
+  }, [designaciones])
+
   const supabase = createClient()
 
-  const handleTogglePagado = async (id: string, currentStatus: boolean) => {
+  const handleTogglePagadoMasivo = async (e: React.MouseEvent) => {
+    e.stopPropagation() // Evitar expandir/colapsar al clickear el check
+    const nextStatus = !localIsPaid
+    setLocalIsPaid(nextStatus) // Update UI immediately
+
     try {
       const { error } = await supabase
         .from('designaciones')
-        .update({ pagado: !currentStatus })
-        .eq('id', id)
+        .update({ pagado: nextStatus })
+        .eq('arbitro_id', arbitroId)
+        .eq('semana', semana)
+        .eq('anio', anio)
       
       if (error) throw error
-      
-      toast.success(currentStatus ? "Marcado como pendiente" : "Marcado como pagado")
-      // Idealmente refrescar los datos, pero como estamos en un componente hijo sin 'onRefresh', 
-      // confiaremos en que el usuario vea el cambio visual o implementaremos un estado local rápido si es necesario.
-      // Por ahora, asumimos que el padre recargará o el usuario refrescará si quiere ver el total actualizado si afectara (no afecta al total neto, solo es visual).
+      toast.success(nextStatus ? `Pago registrado para ${arbitroNombre}` : `Pago pendiente para ${arbitroNombre}`)
     } catch (error) {
+      setLocalIsPaid(!nextStatus) // Rollback UI if error
       toast.error("Error al actualizar estado de pago")
     }
   }
@@ -71,22 +86,41 @@ export function FilaArbitro({
   if (designaciones.length === 0 && descuentos.length === 0) return null
 
   return (
-    <div className="border rounded-2xl bg-white overflow-hidden shadow-sm transition-all hover:shadow-md border-zinc-100">
+    <div className={cn(
+      "bg-white border rounded-[2rem] overflow-hidden shadow-sm transition-all duration-300",
+      localIsPaid ? "border-blue-200/50 opacity-80" : "hover:border-blue-200"
+    )}>
       <div 
         className={cn(
           "p-3 md:px-6 md:py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 cursor-pointer",
-          isExpanded ? "bg-blue-50/30" : "hover:bg-zinc-50/50"
+          isExpanded ? "bg-blue-50/30" : "hover:bg-zinc-50/50",
+          localIsPaid && "bg-blue-50/10"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "p-1.5 rounded-lg transition-colors",
-            isExpanded ? "bg-[#003399] text-white" : "bg-blue-50 text-[#003399]"
-          )}>
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        <div className="flex items-center gap-4 flex-1 min-w-0 group">
+          <button 
+                onClick={handleTogglePagadoMasivo}
+                className={cn(
+                  "p-2 rounded-xl transition-all shadow-sm flex items-center justify-center",
+                  localIsPaid ? "bg-blue-600 text-white shadow-blue-200" : "bg-white border-2 border-zinc-100 text-zinc-300 hover:border-blue-200 hover:text-blue-500"
+                )}
+              >
+                {localIsPaid ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
+          </button>
+          
+          <div className="flex-1 min-w-0">
+            <h3 className={cn(
+              "text-base sm:text-xl font-black truncate tracking-tight",
+              localIsPaid ? "text-blue-800" : "text-zinc-900"
+            )}>{arbitroNombre}</h3>
+            <div className="flex items-center gap-1.5 mt-0.5">
+               <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse", localIsPaid ? "bg-blue-600" : "bg-blue-400")} />
+               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
+                 {localIsPaid ? "Liquidación Pagada" : "Pago Pendiente"}
+               </span>
+            </div>
           </div>
-          <h3 className="text-lg font-black text-zinc-800 tracking-tight">{arbitroNombre}</h3>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 flex-1 md:justify-end md:ml-12 items-center">
@@ -119,7 +153,6 @@ export function FilaArbitro({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-zinc-400 text-left border-b border-zinc-50">
-                    <th className="pb-2 w-10"></th> {/* New column for checkbox */}
                     <th className="pb-2 font-black text-[9px] uppercase tracking-widest px-1">Fecha</th>
                     <th className="pb-2 font-black text-[9px] uppercase tracking-widest px-1">Detalle (Liga | Rol)</th>
                     <th className="pb-2 text-right font-black text-[9px] uppercase tracking-widest px-1">Honorarios</th>
@@ -130,36 +163,14 @@ export function FilaArbitro({
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
                   {designaciones.map((d, index) => (
-                    <tr key={d.id} className={cn(
-                      "border-b border-zinc-50 transition-colors animate-in fade-in slide-in-from-top-1 duration-200",
-                      d.pagado ? "bg-blue-50/30" : "hover:bg-zinc-50/50"
-                    )}>
-                      <td className="py-2 px-1">
-                        <button 
-                          onClick={() => d.id && handleTogglePagado(d.id, !!d.pagado)}
-                          className={cn(
-                            "p-1 rounded-md transition-all hover:scale-110",
-                            d.pagado ? "text-blue-600" : "text-zinc-300 hover:text-blue-400"
-                          )}
-                          title={d.pagado ? "Marcar como pendiente" : "Marcar como pagado"}
-                        >
-                          {d.pagado ? (
-                            <CheckSquare className="h-4 w-4" />
-                          ) : (
-                            <Square className="h-4 w-4" />
-                          )}
-                        </button>
-                      </td>
+                    <tr key={d.id} className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors animate-in fade-in slide-in-from-top-1 duration-200">
                       <td className="py-2 px-1 text-[10px] text-zinc-400 font-bold uppercase tabular-nums">
                         {new Date(d.fecha + "T12:00:00").toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })}
                       </td>
                       <td className="py-2 px-1">
                         <span className="font-bold text-zinc-700 text-xs">{d.liga_nombre}</span>
                         <span className="mx-2 text-zinc-200">|</span>
-                        <span className={cn(
-                          "text-xs uppercase font-black",
-                          d.pagado ? "text-blue-400" : "text-zinc-500"
-                        )}>{d.rol}</span>
+                        <span className="text-zinc-500 text-xs uppercase font-black">{d.rol}</span>
                         {d.cantidad_partidos > 1 && (
                           <span className="ml-2 bg-blue-50 text-blue-500 text-[9px] px-1.5 py-0.5 rounded-md font-bold">
                             {d.cantidad_partidos} Partidos
