@@ -8,6 +8,16 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "UAR - Gestión de Pagos",
   description: "Sistema de Gestión de Pagos - Colegio de Árbitros de Rosario",
+  icons: {
+    icon: "/uar-logo.png",
+    apple: "/uar-logo.png",
+  },
+  openGraph: {
+    title: "UAR - Gestión de Pagos",
+    description: "Liquidaciones semanales del Colegio de Árbitros de Rosario",
+    images: ["/uar-logo.png"],
+    type: "website",
+  }
 }
 
 export default function RootLayout({
