@@ -46,19 +46,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-zinc-950">
-      <Card className="w-full max-w-md border-t-4 border-t-[#1B5E20] shadow-xl">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="rounded-full bg-[#1B5E20]/10 p-3">
-              <ShieldCheck className="h-10 w-10 text-[#1B5E20]" />
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
+      <Card className="w-full max-w-md border-t-8 border-t-[#003399] shadow-2xl rounded-[2.5rem] overflow-hidden">
+        <CardHeader className="space-y-1 text-center pb-8 pt-10">
+          <div className="flex justify-center mb-6">
+            <div className="bg-white p-4 rounded-3xl shadow-xl shadow-blue-100 border border-blue-50">
+              <img src="/uar-logo.png" alt="UAR logo" className="h-20 w-20 object-contain" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Colegio de Árbitros de Rosario
+          <CardTitle className="text-3xl font-black italic tracking-tighter text-[#003399]">
+            COLEGIO DE ÁRBITROS
           </CardTitle>
-          <CardDescription>
-            Sistema de Gestión de Pagos
+          <CardDescription className="text-zinc-400 font-bold uppercase tracking-widest text-[10px]">
+            Sistema de Gestión de Pagos UAR
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
@@ -73,7 +73,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                className="focus-visible:ring-[#1B5E20]"
+                className="focus-visible:ring-[#003399] h-12 rounded-xl"
               />
             </div>
             <div className="space-y-2">
@@ -85,17 +85,17 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
-                className="focus-visible:ring-[#1B5E20]"
+                className="focus-visible:ring-[#003399] h-12 rounded-xl"
               />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="pb-10">
             <Button 
               type="submit" 
-              className="w-full bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white font-semibold py-6 text-lg" 
+              className="w-full bg-[#003399] hover:bg-[#002266] text-white font-black italic italic py-7 text-xl rounded-2xl shadow-xl shadow-blue-200 transition-all active:scale-95" 
               disabled={loading}
             >
-              {loading ? "Iniciando sesión..." : "Ingresar"}
+              {loading ? "Iniciando..." : "INGRESAR"}
             </Button>
           </CardFooter>
         </form>

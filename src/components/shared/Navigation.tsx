@@ -41,10 +41,12 @@ export function Navigation() {
     <>
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-64 bg-zinc-900 text-zinc-400 fixed inset-y-0 left-0">
-        <div className="p-6">
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="bg-[#003399] p-1.5 rounded-lg text-white">UAR</span>
-            Colegio Árbitros
+        <div className="p-8 flex flex-col items-center">
+          <div className="bg-white p-2 rounded-2xl shadow-lg mb-4">
+            <img src="/uar-logo.png" alt="Logo UAR" className="h-16 w-16 object-contain" />
+          </div>
+          <h1 className="text-sm font-black text-white italic tracking-widest text-center">
+            COLEGIO ÁRBITROS
           </h1>
         </div>
         
