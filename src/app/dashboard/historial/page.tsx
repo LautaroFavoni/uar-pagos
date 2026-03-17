@@ -177,6 +177,8 @@ export default function HistorialPage() {
                 arbitroNombre={arb.nombre}
                 designaciones={arb.designaciones}
                 descuentos={arb.descuentos}
+                semana={semana}
+                anio={anio}
                 onRemoveDesignacion={handleDeleteDesignacion}
                 onRemoveDescuento={handleDeleteDescuento}
               />
