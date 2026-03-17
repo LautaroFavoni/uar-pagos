@@ -122,8 +122,8 @@ export default function CargaRapidaPage() {
     <div className="space-y-6 pb-20">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-white p-6 rounded-[2rem] border shadow-sm">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-[#1B5E20] italic">CARGA RÁPIDA</h2>
-          <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Panel de Designaciones</p>
+          <h2 className="text-3xl font-black tracking-tight text-[#003399] italic">CARGA UAR</h2>
+          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Dashboard de Designaciones</p>
         </div>
         
         <div className="min-w-[300px]">
