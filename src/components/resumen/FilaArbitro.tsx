@@ -56,7 +56,9 @@ export function FilaArbitro({
   const supabase = createClient()
 
   const handleTogglePagadoMasivo = async (e: React.MouseEvent) => {
-    e.stopPropagation() // Evitar expandir/colapsar al clickear el check
+    e.stopPropagation() 
+    if (readonly) return // SEGURIDAD: No permitir cambios en vista pública
+    
     const nextStatus = !localIsPaid
     setLocalIsPaid(nextStatus) // Update UI immediately
 
@@ -101,9 +103,12 @@ export function FilaArbitro({
         <div className="flex items-center gap-4 flex-1 min-w-0 group">
           <button 
                 onClick={handleTogglePagadoMasivo}
+                disabled={readonly}
                 className={cn(
                   "p-2 rounded-xl transition-all shadow-sm flex items-center justify-center",
-                  localIsPaid ? "bg-blue-600 text-white shadow-blue-200" : "bg-white border-2 border-zinc-100 text-zinc-300 hover:border-blue-200 hover:text-blue-500"
+                  localIsPaid ? "bg-blue-600 text-white shadow-blue-200" : "bg-white border-2 border-zinc-100 text-zinc-300",
+                  !readonly && (localIsPaid ? "" : "hover:border-blue-200 hover:text-blue-500"),
+                  readonly && "cursor-default opacity-80"
                 )}
               >
                 {localIsPaid ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
@@ -227,14 +232,16 @@ export function FilaArbitro({
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="font-bold text-red-600">-{formatARS(dc.monto)}</span>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6 text-red-200 hover:text-red-600"
-                          onClick={() => dc.id && onRemoveDescuento?.(dc.id)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        {!readonly && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-6 w-6 text-red-200 hover:text-red-600"
+                            onClick={() => dc.id && onRemoveDescuento?.(dc.id)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
