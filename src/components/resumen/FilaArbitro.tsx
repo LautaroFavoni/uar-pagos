@@ -107,7 +107,12 @@ export function FilaArbitro({
                       <td className="py-2 px-1">
                         <span className="font-bold text-zinc-700 text-xs">{d.liga_nombre}</span>
                         <span className="mx-2 text-zinc-200">|</span>
-                        <span className="text-zinc-500 text-xs uppercase font-black">{d.rol} {d.cantidad_partidos > 1 ? `(x${d.cantidad_partidos})` : ''}</span>
+                        <span className="text-zinc-500 text-xs uppercase font-black">{d.rol}</span>
+                        {d.cantidad_partidos > 1 && (
+                          <span className="ml-2 bg-zinc-100 text-zinc-500 text-[9px] px-1.5 py-0.5 rounded-md font-bold">
+                            {d.cantidad_partidos} Partidos
+                          </span>
+                        )}
                       </td>
                       <td className="py-2 px-1 text-right text-zinc-600 text-xs">{formatARS(d.monto_honorarios)}</td>
                       <td className="py-2 px-1 text-right text-zinc-600 text-xs">{formatARS(d.monto_viatico)}</td>

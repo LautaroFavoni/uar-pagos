@@ -129,6 +129,12 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
       // 2. Upsert de los actuales
       const updates = ternasLocales.map(t => {
         const { id, arbitros, ligas, arbitro_nombre, liga_nombre, ...data } = t
+        
+        // Buscamos el precio unitario actual del rol para asegurar consistencia
+        const precioConfig = precios.find(p => p.rol === data.rol)
+        const precioUnitario = precioConfig ? precioConfig.monto : (data.monto_honorarios / (data.cantidad_partidos || 1))
+        const honorariosTotales = precioUnitario * data.cantidad_partidos
+
         return {
           ...(id.startsWith('new-') ? {} : { id }),
           ...data,
@@ -138,7 +144,8 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
           fecha,
           semana: nSemana,
           anio: nAnio,
-          total: (data.monto_honorarios * data.cantidad_partidos) + data.monto_viatico,
+          monto_honorarios: honorariosTotales,
+          total: honorariosTotales + data.monto_viatico,
           observaciones: observaciones
         }
       })
