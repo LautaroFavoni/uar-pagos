@@ -94,18 +94,18 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
   }
 
   return (
-    <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden">
+    <Card className="border-none shadow-xl bg-white/80 backdrop-blur-md rounded-[2.5rem] overflow-hidden">
       <CardContent className="p-8 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-2">
             <Label className="text-zinc-500 font-bold ml-1">Fecha del Partido</Label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-3 h-5 w-5 text-emerald-500 z-10" />
+              <Calendar className="absolute left-3 top-3 h-5 w-5 text-blue-500 z-10" />
               <Input 
                 type="date" 
                 value={fecha} 
                 onChange={(e) => handleFechaChange(e.target.value)}
-                className="pl-10 h-12 rounded-2xl border-zinc-200 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium"
+                className="pl-10 h-12 rounded-2xl border-zinc-200 focus:ring-blue-500/20 focus:border-blue-500 font-medium"
               />
             </div>
           </div>
@@ -149,8 +149,8 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <h3 className="font-extrabold text-[#1B5E20] flex items-center gap-2 text-lg">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <h3 className="font-extrabold text-[#003399] flex items-center gap-2 text-lg italic">
+              <span className="h-2 w-2 rounded-full bg-blue-500" />
               Designación de Roles
             </h3>
             <div className="grid gap-4">
@@ -168,9 +168,9 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
           </div>
 
           <div className="space-y-6">
-            <h3 className="font-extrabold text-[#1B5E20] flex items-center gap-2 text-lg">
-              <span className="h-2 w-2 rounded-full bg-amber-500" />
-              Viáticos (Opcional)
+            <h3 className="font-extrabold text-[#003399] flex items-center gap-2 text-lg italic">
+              <span className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
+              Viáticos (Maneja?)
             </h3>
             <div className="space-y-4 bg-zinc-50/50 p-6 rounded-3xl border border-zinc-100">
               <div className="space-y-2">
@@ -188,7 +188,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
                     <Button
                       key={p.id}
                       variant={viaticoArbitroId === selectedArbitros[p.rol] ? "default" : "outline"}
-                      className={viaticoArbitroId === selectedArbitros[p.rol] ? "bg-[#1B5E20] text-white rounded-xl h-10" : "rounded-xl h-10"}
+                      className={viaticoArbitroId === selectedArbitros[p.rol] ? "bg-[#003399] text-white rounded-xl h-10 shadow-lg shadow-blue-100" : "rounded-xl h-10 border-zinc-100"}
                       disabled={!selectedArbitros[p.rol]}
                       onClick={() => setViaticoArbitroId(selectedArbitros[p.rol])}
                     >
@@ -202,7 +202,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
         </div>
 
         <Button 
-          className="w-full bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white h-14 rounded-2xl font-black text-lg shadow-lg shadow-emerald-200 transition-all active:scale-95"
+          className="w-full bg-[#003399] hover:bg-[#002266] text-white h-16 rounded-[2rem] font-black text-xl italic shadow-2xl shadow-blue-200 transition-all active:scale-95"
           onClick={handleAdd}
         >
           {liga.nombre.toLowerCase().includes('partido') ? 'AGREGAR PARTIDO A LA LISTA' : 'GUARDAR DESIGNACIÓN'}

@@ -126,12 +126,12 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
   }
 
   return (
-    <Card className="border-emerald-200 shadow-lg">
-      <CardHeader className="bg-emerald-50/50">
-        <CardTitle className="text-emerald-900 flex justify-between items-center text-2xl font-black">
+    <Card className="border-blue-200 shadow-lg bg-white/80 backdrop-blur-md rounded-[2.5rem] overflow-hidden">
+      <CardHeader className="bg-blue-50/50 border-b border-blue-100">
+        <CardTitle className="text-[#003399] flex justify-between items-center text-2xl font-black italic">
           {liga.nombre.toUpperCase()}
-          <span className="text-xs font-bold bg-white px-3 py-1 rounded-full text-emerald-600 border border-emerald-100">
-            POR PARTIDO
+          <span className="text-[10px] font-black bg-[#003399] px-3 py-1 rounded-full text-white tracking-widest">
+            CARGA FLEXIBLE
           </span>
         </CardTitle>
       </CardHeader>
@@ -159,8 +159,8 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
             <Input value={observacionesGeneral} onChange={(e) => setObservacionesGeneral(e.target.value)} placeholder="Ej: Final" className="h-10 rounded-xl" />
           </div>
         </div>
-        <div className="bg-zinc-50/50 p-4 rounded-2xl border border-zinc-100/50">
-            <Label className="text-[10px] font-black uppercase text-zinc-400 mb-2 block text-center">Sede / Localidad para Viático</Label>
+        <div className="bg-blue-50/30 p-5 rounded-3xl border border-blue-100/50">
+            <Label className="text-[10px] font-black uppercase text-blue-400 mb-3 block text-center tracking-[0.2em]">Sede / Localidad para Viático</Label>
             <ViaticoPicker 
               viaticos={viaticos} 
               value={viaticoLocalidad} 
@@ -170,47 +170,45 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
 
         {/* Carga Individual */}
         <div className="space-y-4 border-t pt-6">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-6 w-1 bg-emerald-500 rounded-full"></div>
-            <h4 className="font-black italic text-zinc-800">CARGAR ÁRBITRO</h4>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-6 w-1.5 bg-[#003399] rounded-full shadow-[0_0_10px_rgba(0,51,153,0.3)]"></div>
+            <h4 className="font-black italic text-zinc-800 tracking-tight">AGREGAR ACTIVIDAD</h4>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-white p-4 rounded-2xl border shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-white p-5 rounded-[2rem] border-2 border-blue-50 shadow-xl shadow-blue-100/20 transition-all focus-within:border-blue-200">
             <div className="md:col-span-4 space-y-2">
-              <Label className="text-xs font-bold text-zinc-500">Árbitro</Label>
+              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Árbitro</Label>
               <ArbitroSelector 
                 arbitros={arbitros} 
                 value={currentArbitroId} 
                 onChange={setCurrentArbitroId}
               />
             </div>
-            <div className="md:col-span-3 space-y-2">
-              <Label className="text-xs font-bold text-zinc-500">Rol / Categoría</Label>
+            <div className="md:col-span-4 space-y-2">
+              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Función / Categoría</Label>
               <ViaticoPicker 
-                // Reutilizamos el picker pero con roles si no queremos crear otro componente ahora
-                // O mejor usamos un select simple para no complicar
                 viaticos={rolesDisponibles.map(r => ({ id: r.id, localidad: r.rol, monto: r.monto }))}
                 value={currentRol}
                 onChange={setCurrentRol}
               />
             </div>
             <div className="md:col-span-2 space-y-2">
-              <Label className="text-xs font-bold text-zinc-500">Cantidad</Label>
+              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Cant.</Label>
               <Input 
                 type="number" 
                 min={1} 
                 value={currentCantidad} 
                 onChange={(e) => setCurrentCantidad(parseInt(e.target.value) || 1)}
-                className="h-11 rounded-xl"
+                className="h-11 rounded-xl border-zinc-200 focus:ring-[#003399] focus:border-[#003399] font-bold"
               />
             </div>
-            <div className="md:col-span-3">
+            <div className="md:col-span-2">
               <Button 
                 onClick={handleAddToList}
                 disabled={!currentArbitroId || !currentRol}
-                className="w-full h-11 rounded-xl bg-zinc-900 hover:bg-black text-white gap-2 font-bold"
+                className="w-full h-11 rounded-xl bg-[#003399] hover:bg-[#002266] text-white gap-2 font-black shadow-lg shadow-blue-200 transition-all active:scale-95"
               >
-                <Plus className="h-4 w-4" /> AGREGAR
+                <Plus className="h-4 w-4" /> SUMAR
               </Button>
             </div>
           </div>
@@ -230,8 +228,8 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
                 <div 
                     key={`${item.arbitroId}-${item.rol}`} 
                     className={cn(
-                        "flex items-center justify-between p-4 rounded-2xl border transition-all",
-                        manejaId === item.arbitroId ? "bg-emerald-50 border-emerald-200" : "bg-white border-zinc-100"
+                        "flex items-center justify-between p-5 rounded-[2rem] border transition-all animate-in slide-in-from-right-4 duration-300",
+                        manejaId === item.arbitroId ? "bg-blue-50/50 border-blue-200" : "bg-white border-zinc-100 shadow-sm"
                     )}
                 >
                   <div className="flex items-center gap-4">
@@ -250,13 +248,13 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
                     <button
                         onClick={() => setManejaId(manejaId === item.arbitroId ? "" : item.arbitroId)}
                         className={cn(
-                            "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all",
+                            "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all tracking-widest",
                             manejaId === item.arbitroId 
-                                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-200" 
+                                ? "bg-[#003399] text-white shadow-lg shadow-blue-200" 
                                 : "bg-zinc-100 text-zinc-400 hover:bg-zinc-200"
                         )}
                     >
-                        {manejaId === item.arbitroId ? "Maneja ✓" : "Maneja?"}
+                        {manejaId === item.arbitroId ? "Maneja ✓" : "¿Maneja?"}
                     </button>
                     <Button 
                         variant="ghost" 
@@ -274,10 +272,10 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
             <div className="pt-6">
                 <Button 
                     onClick={handleConfirmTotal}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-3 h-14 rounded-2xl font-black italic shadow-xl shadow-emerald-200 text-lg"
+                    className="w-full bg-[#003399] hover:bg-[#002266] text-white gap-3 h-16 rounded-[2rem] font-black italic shadow-2xl shadow-blue-200 text-xl transition-all active:scale-95"
                 >
-                    <Save className="h-5 w-5" />
-                    CONFIRMAR CARGA DE {listaLocal.length} ÍTEMS
+                    <Save className="h-6 w-6" />
+                    CARGAR {listaLocal.length} ACTIVIDADES
                 </Button>
             </div>
           </div>
