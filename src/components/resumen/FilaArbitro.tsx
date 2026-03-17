@@ -62,22 +62,22 @@ export function FilaArbitro({
           <h3 className="text-lg font-black text-zinc-800 tracking-tight">{arbitroNombre}</h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 flex-1 md:justify-end md:ml-12 items-center">
-          <div className="text-left md:text-right border-r md:border-none pr-4 md:pr-0">
-            <span className="text-[8px] uppercase font-black text-zinc-400 block tracking-widest leading-none mb-1">Honorarios</span>
-            <span className="font-bold text-xs text-zinc-600">{formatARS(subtotalHonorarios)}</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 flex-1 md:justify-end md:ml-12 items-center">
+          <div className="text-left md:text-right border-r border-zinc-50 md:border-none pr-2 md:pr-0">
+            <span className="text-[7px] sm:text-[8px] uppercase font-black text-zinc-400 block tracking-[0.15em] leading-none mb-1">Honorarios</span>
+            <span className="font-bold text-[10px] sm:text-xs text-zinc-600">{formatARS(subtotalHonorarios)}</span>
           </div>
-          <div className="text-left md:text-right border-r md:border-none pr-4 md:pr-0">
-            <span className="text-[8px] uppercase font-black text-zinc-400 block tracking-widest leading-none mb-1">Viáticos</span>
-            <span className="font-bold text-xs text-zinc-600">{formatARS(subtotalViaticos)}</span>
+          <div className="text-left md:text-right border-r border-zinc-50 md:border-none pr-2 md:pr-0">
+            <span className="text-[7px] sm:text-[8px] uppercase font-black text-zinc-400 block tracking-[0.15em] leading-none mb-1">Viáticos</span>
+            <span className="font-bold text-[10px] sm:text-xs text-zinc-600">{formatARS(subtotalViaticos)}</span>
           </div>
-          <div className="text-left md:text-right border-r md:border-none pr-4 md:pr-0">
-            <span className="text-[8px] uppercase font-black text-red-500 block tracking-widest leading-none mb-1">Descuentos</span>
-            <span className="font-bold text-xs text-red-500">-{formatARS(totalDescuentos)}</span>
+          <div className="text-left md:text-right border-r border-zinc-50 md:border-none pr-2 md:pr-0">
+            <span className="text-[7px] sm:text-[8px] uppercase font-black text-red-400 block tracking-[0.15em] leading-none mb-1">Dctos.</span>
+            <span className="font-bold text-[10px] sm:text-xs text-red-500">-{formatARS(totalDescuentos)}</span>
           </div>
-          <div className="text-left md:text-right bg-emerald-50 md:bg-transparent p-2 md:p-0 rounded-xl">
-            <span className="text-[8px] uppercase font-black text-[#1B5E20] block tracking-widest leading-none mb-1">Neto a Pagar</span>
-            <span className="font-black text-base text-[#1B5E20]">{formatARS(totalAPagar)}</span>
+          <div className="text-left md:text-right bg-emerald-50/50 md:bg-transparent p-1.5 md:p-0 rounded-xl transition-colors group-hover:bg-emerald-50">
+            <span className="text-[7px] sm:text-[8px] uppercase font-black text-emerald-700 block tracking-[0.15em] leading-none mb-1">Neto</span>
+            <span className="font-black text-sm sm:text-base text-emerald-700">{formatARS(totalAPagar)}</span>
           </div>
         </div>
       </div>
