@@ -34,10 +34,9 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
   const [viaticoLocalidad, setViaticoLocalidad] = useState("Sin viatico")
   const [manejaId, setManejaId] = useState<string>("")
   
-  // Nuevo estado para carga individual
+  // Nuevo estado para carga individual multi-rol
   const [currentArbitroId, setCurrentArbitroId] = useState("")
-  const [currentRol, setCurrentRol] = useState("")
-  const [currentCantidad, setCurrentCantidad] = useState(1)
+  const [currentQuantities, setCurrentQuantities] = useState<Record<string, number>>({})
   const [equipoLocal, setEquipoLocal] = useState("")
   const [equipoVisitante, setEquipoVisitante] = useState("")
   const [hora, setHora] = useState("15:30")
@@ -46,34 +45,48 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
 
   const rolesDisponibles = precios.filter(p => p.liga_id === liga.id)
   
-  // Efecto para poner el primer rol por defecto
-  if (!currentRol && rolesDisponibles.length > 0) {
-    setCurrentRol(rolesDisponibles[0].rol)
+  const handleQuantityChange = (rol: string, val: number) => {
+    setCurrentQuantities(prev => ({
+      ...prev,
+      [rol]: Math.max(0, val)
+    }))
   }
 
   const handleAddToList = () => {
-    if (!currentArbitroId || !currentRol) return
+    if (!currentArbitroId) return
     
-    // Permitimos múltiples entradas del mismo árbitro si son roles distintos
-    if (listaLocal.some(sm => sm.arbitroId === currentArbitroId && sm.rol === currentRol)) {
-      toast.error("Este árbitro ya está cargado con ese rol")
-      return
-    }
-
     const arb = arbitros.find(a => a.id === currentArbitroId)
-    const precio = rolesDisponibles.find(p => p.rol === currentRol)
-    if (!arb || !precio) return
+    if (!arb) return
 
-    setListaLocal(prev => [...prev, {
-      arbitroId: currentArbitroId,
-      nombre: arb.nombre,
-      rol: currentRol,
-      cantidad: currentCantidad,
-      montoUnitario: precio.monto
-    }])
+    const nuevasEntradas: SeleccionadoLocal[] = []
+    
+    Object.entries(currentQuantities).forEach(([rol, cant]) => {
+      if (cant > 0) {
+        // Evitar duplicados exactos (mismo arb + mismo rol)
+        if (!listaLocal.some(sm => sm.arbitroId === currentArbitroId && sm.rol === rol)) {
+          const precio = rolesDisponibles.find(p => p.rol === rol)
+          if (precio) {
+            nuevasEntradas.push({
+              arbitroId: currentArbitroId,
+              nombre: arb.nombre,
+              rol,
+              cantidad: cant,
+              montoUnitario: precio.monto
+            })
+          }
+        }
+      }
+    })
 
-    setCurrentArbitroId("")
-    setCurrentCantidad(1)
+    if (nuevasEntradas.length > 0) {
+      setListaLocal(prev => [...prev, ...nuevasEntradas])
+      toast.success(`Agregadas ${nuevasEntradas.length} funciones para ${arb.nombre}`)
+      // Resetear solo el arbitro y cantidades, mantener equipos/fecha
+      setCurrentArbitroId("")
+      setCurrentQuantities({})
+    } else {
+      toast.error("Ingresá al menos una cantidad mayor a 0")
+    }
   }
 
   const handleRemoveFromList = (id: string, rol: string) => {
@@ -175,41 +188,51 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
             <h4 className="font-black italic text-zinc-800 tracking-tight">AGREGAR ACTIVIDAD</h4>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-white p-5 rounded-[2rem] border-2 border-blue-50 shadow-xl shadow-blue-100/20 transition-all focus-within:border-blue-200">
-            <div className="md:col-span-4 space-y-2">
-              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Árbitro</Label>
-              <ArbitroSelector 
-                arbitros={arbitros} 
-                value={currentArbitroId} 
-                onChange={setCurrentArbitroId}
-              />
-            </div>
-            <div className="md:col-span-4 space-y-2">
-              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Función / Categoría</Label>
-              <ViaticoPicker 
-                viaticos={rolesDisponibles.map(r => ({ id: r.id, localidad: r.rol, monto: r.monto }))}
-                value={currentRol}
-                onChange={setCurrentRol}
-              />
-            </div>
-            <div className="md:col-span-2 space-y-2">
-              <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Cant.</Label>
-              <Input 
-                type="number" 
-                min={1} 
-                value={currentCantidad} 
-                onChange={(e) => setCurrentCantidad(parseInt(e.target.value) || 1)}
-                className="h-11 rounded-xl border-zinc-200 focus:ring-[#003399] focus:border-[#003399] font-bold"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Button 
-                onClick={handleAddToList}
-                disabled={!currentArbitroId || !currentRol}
-                className="w-full h-11 rounded-xl bg-[#003399] hover:bg-[#002266] text-white gap-2 font-black shadow-lg shadow-blue-200 transition-all active:scale-95"
-              >
-                <Plus className="h-4 w-4" /> SUMAR
-              </Button>
+          <div className="bg-white p-6 rounded-[2.5rem] border-2 border-blue-50 shadow-xl shadow-blue-100/20 transition-all focus-within:border-blue-200">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                <div className="md:col-span-5 space-y-2">
+                    <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1 tracking-widest">1. SELECCIONAR ÁRBITRO</Label>
+                    <ArbitroSelector 
+                        arbitros={arbitros} 
+                        value={currentArbitroId} 
+                        onChange={setCurrentArbitroId}
+                    />
+                </div>
+
+                <div className="md:col-span-7 space-y-4">
+                    <Label className="text-[10px] font-black uppercase text-zinc-400 ml-1 tracking-widest">2. INGRESAR CANTIDADES POR FUNCIÓN</Label>
+                    <div className={cn(
+                        "grid gap-3 transition-all",
+                        !currentArbitroId && "opacity-30 pointer-events-none grayscale"
+                    )}>
+                        {rolesDisponibles.map(r => (
+                            <div key={r.id} className="flex items-center justify-between gap-4 p-3 rounded-2xl border bg-zinc-50/50 hover:bg-zinc-50 transition-colors">
+                                <div className="flex-1">
+                                    <span className="text-xs font-black text-zinc-700 uppercase">{r.rol}</span>
+                                    <span className="block text-[10px] font-bold text-zinc-400">{formatARS(r.monto)} c/u</span>
+                                </div>
+                                <div className="w-24">
+                                    <Input 
+                                        type="number" 
+                                        min={0}
+                                        placeholder="0"
+                                        value={currentQuantities[r.rol] || ""} 
+                                        onChange={(e) => handleQuantityChange(r.rol, parseInt(e.target.value) || 0)}
+                                        className="h-10 rounded-xl border-zinc-200 focus:ring-[#003399] focus:border-[#003399] font-black text-center text-blue-600"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <Button 
+                        onClick={handleAddToList}
+                        disabled={!currentArbitroId}
+                        className="w-full h-14 rounded-2xl bg-[#003399] hover:bg-[#002266] text-white gap-3 font-black shadow-xl shadow-blue-200 transition-all active:scale-95 text-lg italic"
+                    >
+                        <Plus className="h-5 w-5" /> SUMAR ACTIVIDAD AL PARTIDO
+                    </Button>
+                </div>
             </div>
           </div>
         </div>
