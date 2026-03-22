@@ -60,3 +60,15 @@ export interface Descuento {
   monto: number;
   estado: 'pendiente' | 'liquidado';
 }
+
+export interface DeudaPendiente {
+  id: string;
+  arbitro_id: string;
+  concepto: string;
+  monto_inicial: number;
+  monto_actual: number;
+  created_at?: string;
+  
+  // Virtual field
+  arbitro_nombre?: string;
+}

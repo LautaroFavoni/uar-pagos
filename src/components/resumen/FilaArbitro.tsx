@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Designacion, Descuento } from "@/lib/types"
+import { Designacion, Descuento, DeudaPendiente } from "@/lib/types"
 import { formatARS } from "@/lib/calculos"
 import { 
   ChevronDown, 
@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Square,
   CheckSquare,
-  Trash
+  Trash,
+  Wallet
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -27,6 +28,7 @@ interface FilaArbitroProps {
   onAddDescuento?: (id: string) => void
   onRemoveDescuento?: (id: string) => void
   onRemoveDesignacion?: (id: string) => void
+  deudas?: DeudaPendiente[]
   readonly?: boolean
   semana: number
   anio: number
@@ -40,6 +42,7 @@ export function FilaArbitro({
   onAddDescuento,
   onRemoveDescuento,
   onRemoveDesignacion,
+  deudas = [],
   readonly = false,
   semana,
   anio
@@ -84,6 +87,7 @@ export function FilaArbitro({
   const totalDescuentos = descuentos.reduce((acc, d) => acc + d.monto, 0)
   const totalAPagar = (subtotalHonorarios + subtotalViaticos) - totalDescuentos
   const neto = totalAPagar; // Renamed for consistency with the provided snippet
+  const totalDeudaPendiente = deudas.reduce((acc, d) => acc + d.monto_actual, 0)
 
   if (designaciones.length === 0 && descuentos.length === 0) return null
 
@@ -119,11 +123,16 @@ export function FilaArbitro({
               "text-base sm:text-xl font-black truncate tracking-tight",
               localIsPaid ? "text-blue-800" : "text-zinc-900"
             )}>{arbitroNombre}</h3>
-            <div className="flex items-center gap-1.5 mt-0.5">
+            <div className="flex items-center gap-2 mt-0.5">
                <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse", localIsPaid ? "bg-blue-600" : "bg-blue-400")} />
                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
                  {localIsPaid ? "Liquidación Pagada" : "Pago Pendiente"}
                </span>
+               {!localIsPaid && totalDeudaPendiente > 0 && (
+                 <span className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-[9px] font-black animate-bounce shadow-sm border border-red-100">
+                   <AlertCircle className="h-2.5 w-2.5" /> DEUDA: {formatARS(totalDeudaPendiente)}
+                 </span>
+               )}
             </div>
           </div>
         </div>
@@ -246,12 +255,32 @@ export function FilaArbitro({
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="py-4 text-center text-zinc-400 text-xs italic border border-dashed rounded-lg">
-                  Sin descuentos aplicados
+                  ) : (
+                    <div className="py-4 text-center text-zinc-400 text-xs italic border border-dashed rounded-lg">
+                      Sin descuentos aplicados
+                    </div>
+                  )}
+                  
+                  {totalDeudaPendiente > 0 && !localIsPaid && (
+                    <div className="mt-4 p-4 bg-red-50/30 border border-red-100 rounded-2xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wallet className="h-4 w-4 text-red-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-red-600">Saldos Deudores Pendientes</span>
+                      </div>
+                      <div className="space-y-1">
+                        {deudas.map(d => (
+                          <div key={d.id} className="flex justify-between items-center text-xs">
+                            <span className="text-zinc-500">{d.concepto}</span>
+                            <span className="font-bold text-red-600">{formatARS(d.monto_actual)}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="mt-3 text-[9px] text-red-400 italic font-medium leading-tight">
+                        * Al cerrar la semana, se cobrará automáticamente el monto disponible (Neto) para reducir este saldo.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
             <div className={cn(
               "bg-zinc-900 text-white p-5 sm:p-7 rounded-2xl sm:rounded-[2rem] shadow-2xl flex flex-col items-center justify-center min-w-[180px] sm:min-w-[240px] border-t-4 border-blue-500 transition-all hover:scale-[1.02]",

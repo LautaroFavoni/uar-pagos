@@ -10,7 +10,11 @@ import { Calendar, Wallet, AlertCircle, Loader2 } from "lucide-react"
 export default function ResumenPublicoPage() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<{ designaciones: any[], descuentos: any[] }>({ designaciones: [], descuentos: [] })
+  const [data, setData] = useState<{ designaciones: any[], descuentos: any[], deudas: any[] }>({ 
+    designaciones: [], 
+    descuentos: [],
+    deudas: [] 
+  })
   const [error, setError] = useState<string | null>(null)
   
   const supabase = createClient()
@@ -27,7 +31,8 @@ export default function ResumenPublicoPage() {
 
         const [
           { data: des, error: e1 }, 
-          { data: dct, error: e2 }
+          { data: dct, error: e2 },
+          { data: deudas, error: e3 }
         ] = await Promise.all([
           supabase
             .from('designaciones')
@@ -39,14 +44,19 @@ export default function ResumenPublicoPage() {
             .from('descuentos')
             .select('*, arbitros(nombre)')
             .eq('semana', semana)
-            .eq('anio', anio)
+            .eq('anio', anio),
+          supabase
+            .from('deudas_pendientes')
+            .select('*')
+            .gt('monto_actual', 0)
         ])
 
-        if (e1 || e2) throw new Error("Error al cargar datos")
+        if (e1 || e2 || e3) throw new Error("Error al cargar datos")
         
         setData({
           designaciones: des?.map(d => ({ ...d, arbitro_nombre: d.arbitros?.nombre, liga_nombre: d.ligas?.nombre })) || [],
-          descuentos: dct || []
+          descuentos: dct || [],
+          deudas: deudas || []
         })
       } catch (err: any) {
         setError(err.message)
@@ -135,6 +145,7 @@ export default function ResumenPublicoPage() {
                    arbitroNombre={arbName}
                    designaciones={ads}
                    descuentos={dcs}
+                   deudas={data.deudas.filter(d => d.arbitro_id === arbId)}
                    semana={Number(sPart)}
                    anio={Number(aPart)}
                    readonly={true}

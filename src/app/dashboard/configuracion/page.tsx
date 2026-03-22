@@ -24,7 +24,8 @@ import { Switch } from "@/components/ui/switch"
 import { ModalNuevoArbitro } from "@/components/configuracion/ModalNuevoArbitro"
 import { ModalNuevoTorneo } from "@/components/configuracion/ModalNuevoTorneo"
 import { ModalNuevaLocalidad } from "@/components/configuracion/ModalNuevaLocalidad"
-import { Trash2 } from "lucide-react"
+import { GestionDeudas } from "@/components/configuracion/GestionDeudas"
+import { Trash2, AlertCircle } from "lucide-react"
 
 export default function ConfiguracionPage() {
   const [loading, setLoading] = useState(true)
@@ -214,7 +215,7 @@ export default function ConfiguracionPage() {
     <div className="space-y-8 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-[#1B5E20]">Configuración</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-[#003399]">Configuración</h2>
           <p className="text-muted-foreground">Administración de árbitros, honorarios y viáticos.</p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchData} disabled={loading} className="gap-2">
@@ -224,7 +225,7 @@ export default function ConfiguracionPage() {
       </div>
 
       <Tabs defaultValue="arbitros" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 md:w-[500px] mb-8">
+        <TabsList className="grid w-full grid-cols-5 md:w-[600px] mb-8">
           <TabsTrigger value="arbitros" className="gap-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Árbitros</span>
@@ -241,6 +242,10 @@ export default function ConfiguracionPage() {
             <MapPin className="h-4 w-4" />
             <span className="hidden sm:inline">Viáticos</span>
           </TabsTrigger>
+          <TabsTrigger value="deudas" className="gap-2 text-red-600 data-[state=active]:bg-red-50">
+            <AlertCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Deudas</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="arbitros">
@@ -251,7 +256,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Habilita o deshabilita árbitros para la carga rápida.</CardDescription>
               </div>
               <Button 
-                className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 gap-2"
+                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
                 onClick={() => setIsModalArbitroOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -305,7 +310,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Crea y modifica las ligas disponibles en el sistema.</CardDescription>
               </div>
               <Button 
-                className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 gap-2"
+                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
                 onClick={() => setIsModalTorneoOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -402,7 +407,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Configura los costos de traslado por localidad.</CardDescription>
               </div>
               <Button 
-                className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 gap-2"
+                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
                 onClick={() => setIsModalLocalidadOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -434,6 +439,10 @@ export default function ConfiguracionPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="deudas">
+          <GestionDeudas arbitros={arbitros} />
         </TabsContent>
       </Tabs>
 
@@ -516,7 +525,7 @@ function FilaEditable({ initialValue, initialLabel2, label1, onSave, onSaveLabel
           variant={hasChanged ? "default" : "ghost"}
           disabled={!hasChanged}
           onClick={handleSave}
-          className={hasChanged ? "bg-[#1B5E20] hover:bg-[#1B5E20]/90" : ""}
+          className={hasChanged ? "bg-[#003399] hover:bg-[#003399]/90" : ""}
         >
           <Save className="h-4 w-4" />
         </Button>
@@ -579,7 +588,7 @@ function FilaViaticoEditable({ initialValue, initialLocalidad, onSave, onDelete 
             variant={hasChanged ? "default" : "ghost"}
             disabled={!hasChanged}
             onClick={handleSave}
-            className={hasChanged ? "bg-[#1B5E20] hover:bg-[#1B5E20]/90" : ""}
+            className={hasChanged ? "bg-[#003399] hover:bg-[#003399]/90" : ""}
           >
             <Save className="h-4 w-4" />
           </Button>

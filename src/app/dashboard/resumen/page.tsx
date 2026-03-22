@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { Designacion, Descuento, Arbitro } from "@/lib/types"
+import { Designacion, Descuento, Arbitro, DeudaPendiente } from "@/lib/types"
 import { FilaArbitro } from "@/components/resumen/FilaArbitro"
 import { ModalDescuento } from "@/components/resumen/ModalDescuento"
 import { getSemanaInfo, formatARS } from "@/lib/calculos"
@@ -25,6 +25,7 @@ export default function ResumenPagosPage() {
   const [closing, setClosing] = useState(false)
   const [designaciones, setDesignaciones] = useState<Designacion[]>([])
   const [descuentos, setDescuentos] = useState<Descuento[]>([])
+  const [deudas, setDeudas] = useState<DeudaPendiente[]>([])
   const [selectedArbitro, setSelectedArbitro] = useState<Arbitro | null>(null)
   
   const hoy = new Date()
@@ -52,7 +53,11 @@ export default function ResumenPagosPage() {
           .select('*')
           .eq('semana', semana)
           .eq('anio', anio)
-          .eq('estado', 'pendiente')
+          .eq('estado', 'pendiente'),
+        supabase
+          .from('deudas_pendientes')
+          .select('*')
+          .gt('monto_actual', 0)
       ])
 
       if (des) {
@@ -69,6 +74,10 @@ export default function ResumenPagosPage() {
         setDescuentos(dct)
       } else {
         setDescuentos([])
+      }
+
+      if (deudas) {
+        setDeudas(deudas as any)
       }
     } catch (error) {
       toast.error("Error al cargar liquidación")
@@ -135,6 +144,46 @@ export default function ResumenPagosPage() {
     
     setClosing(true)
     try {
+      // PROCESAR COBRO DE DEUDAS AUTOMÁTICO
+      for (const arbId of arbitrosIds) {
+        const arbDesignaciones = designaciones.filter(d => d.arbitro_id === arbId)
+        const arbDescuentosExistentes = descuentos.filter(d => d.arbitro_id === arbId)
+        
+        const subtotal = arbDesignaciones.reduce((acc, d) => acc + d.total, 0)
+        const descPrevios = arbDescuentosExistentes.reduce((acc, d) => acc + d.monto, 0)
+        let netoDisponible = subtotal - descPrevios
+
+        if (netoDisponible > 0) {
+          const deudasArb = deudas.filter(d => d.arbitro_id === arbId)
+          
+          for (const deuda of deudasArb) {
+            if (netoDisponible <= 0) break
+            
+            const montoACobrar = Math.min(deuda.monto_actual, netoDisponible)
+            
+            if (montoACobrar > 0) {
+                // 1. Crear el descuento para esta semana
+                await supabase.from('descuentos').insert({
+                  arbitro_id: arbId,
+                  semana,
+                  anio,
+                  concepto: `COBRO DEUDA: ${deuda.concepto}`,
+                  monto: montoACobrar,
+                  estado: 'liquidado' // Ya nace liquidado porque estamos cerrando
+                })
+
+                // 2. Actualizar el saldo de la deuda
+                await supabase.from('deudas_pendientes')
+                  .update({ monto_actual: deuda.monto_actual - montoACobrar })
+                  .eq('id', deuda.id)
+                
+                netoDisponible -= montoACobrar
+            }
+          }
+        }
+      }
+
+      // Proceder con el cierre normal de lo que ya existía
       const { error: err1 } = await supabase
         .from('designaciones')
         .update({ estado: 'pagado' })
@@ -151,9 +200,8 @@ export default function ResumenPagosPage() {
 
       if (err1 || err2) throw new Error("Error al cerrar registros")
 
-      toast.success("Semana cerrada satisfactoriamente")
-      setDesignaciones([])
-      setDescuentos([])
+      toast.success("Semana cerrada satisfactoriamente con cobro de deudas aplicado")
+      fetchData() // Recargar para ver el estado limpio
     } catch (error) {
       toast.error("Hubo un error al cerrar la semana")
     } finally {
@@ -245,6 +293,7 @@ export default function ResumenPagosPage() {
                 arbitroNombre={arbitroNombre}
                 designaciones={arbitroDesignaciones}
                 descuentos={arbitroDescuentos}
+                deudas={deudas.filter(d => d.arbitro_id === arbitroId)}
                 semana={semana}
                 anio={anio}
                 onAddDescuento={(id) => {
