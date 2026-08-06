@@ -54,7 +54,7 @@ export function ModalNuevaLocalidad({ isOpen, onClose, onSuccess }: ModalNuevaLo
       <DialogContent className="sm:max-w-[400px] rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-black">
-            <MapPin className="h-5 w-5 text-[#1B5E20]" />
+            <MapPin className="h-5 w-5 text-brand" />
             Nueva Localidad
           </DialogTitle>
         </DialogHeader>
@@ -86,7 +86,7 @@ export function ModalNuevaLocalidad({ isOpen, onClose, onSuccess }: ModalNuevaLo
             Cancelar
           </Button>
           <Button 
-            className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white rounded-xl font-bold" 
+            className="bg-brand hover:bg-brand-hover text-white rounded-xl font-bold" 
             onClick={handleSave}
             disabled={loading}
           >

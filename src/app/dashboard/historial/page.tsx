@@ -127,7 +127,7 @@ export default function HistorialPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-[#1B5E20]">Historial</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-brand">Historial</h2>
           <p className="text-muted-foreground">Consulta de pagos realizados en semanas anteriores.</p>
         </div>
         <div className="flex items-center gap-2 bg-white p-2 rounded-lg border shadow-sm">

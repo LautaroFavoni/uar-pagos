@@ -185,7 +185,7 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
       <DialogContent className="sm:max-w-[700px] border-none shadow-2xl rounded-3xl overflow-hidden max-h-[90vh] flex flex-col p-0">
         <DialogHeader className="p-6 bg-zinc-50 border-b">
           <div className="flex justify-between items-center">
-            <DialogTitle className="text-2xl font-black italic text-[#1B5E20]">Gestionar Partido</DialogTitle>
+            <DialogTitle className="text-2xl font-black italic text-brand">Gestionar Partido</DialogTitle>
             <Button variant="ghost" className="text-red-500 font-bold hover:bg-red-50" onClick={handleDeleteMatch} disabled={loading}>
               Borrar Partido
             </Button>
@@ -194,25 +194,25 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
         
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
           {/* Datos del partido */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
              <div className="space-y-1">
-                <Label className="text-[10px] font-black uppercase text-emerald-700">Fecha</Label>
+                <Label className="text-[10px] font-black uppercase text-brand">Fecha</Label>
                 <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} className="h-10 rounded-xl" />
              </div>
              <div className="space-y-1">
-                <Label className="text-[10px] font-black uppercase text-emerald-700">Hora</Label>
+                <Label className="text-[10px] font-black uppercase text-brand">Hora</Label>
                 <Input value={hora} onChange={(e) => setHora(e.target.value)} className="h-10 rounded-xl" />
              </div>
              <div className="space-y-1">
-                <Label className="text-[10px] font-black uppercase text-emerald-700">Local</Label>
+                <Label className="text-[10px] font-black uppercase text-brand">Local</Label>
                 <Input value={equipoLocal} onChange={(e) => setEquipoLocal(e.target.value)} className="h-10 rounded-xl" />
              </div>
              <div className="space-y-1">
-                <Label className="text-[10px] font-black uppercase text-emerald-700">Visitante</Label>
+                <Label className="text-[10px] font-black uppercase text-brand">Visitante</Label>
                 <Input value={equipoVisitante} onChange={(e) => setEquipoVisitante(e.target.value)} className="h-10 rounded-xl" />
              </div>
              <div className="col-span-2 md:col-span-4 space-y-1">
-                <Label className="text-[10px] font-black uppercase text-emerald-700">Observaciones Generales</Label>
+                <Label className="text-[10px] font-black uppercase text-brand">Observaciones Generales</Label>
                 <Input 
                   value={observaciones} 
                   onChange={(e) => setObservaciones(e.target.value)} 
@@ -226,7 +226,7 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
                 <Label className="text-xs font-black uppercase tracking-widest text-zinc-400">Terna Designada</Label>
-                <Button variant="outline" size="sm" className="rounded-full h-8 px-4 font-bold border-[#1B5E20] text-[#1B5E20]" onClick={handleAddArbitro}>
+                <Button variant="outline" size="sm" className="rounded-full h-8 px-4 font-bold border-brand text-brand" onClick={handleAddArbitro}>
                     + Agregar Árbitro
                 </Button>
             </div>
@@ -279,7 +279,7 @@ export function ModalEditDesignacion({ match, isOpen, onClose, onSave }: Props) 
           <Button 
             onClick={handleSave} 
             disabled={loading}
-            className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white gap-2 font-bold px-8 h-12 rounded-2xl"
+            className="bg-brand hover:bg-brand-hover text-white gap-2 font-bold px-8 h-12 rounded-2xl"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Guardar Cambios del Partido

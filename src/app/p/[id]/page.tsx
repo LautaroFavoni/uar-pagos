@@ -7,6 +7,9 @@ import { FilaArbitro } from "@/components/resumen/FilaArbitro"
 import { Card } from "@/components/ui/card"
 import { Calendar, Wallet, AlertCircle, Loader2 } from "lucide-react"
 
+import Image from "next/image"
+import { BRAND } from "@/lib/brand"
+
 export default function ResumenPublicoPage() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
@@ -69,9 +72,9 @@ export default function ResumenPublicoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-blue-800">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-brand">
         <div className="text-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600" />
+          <Loader2 className="h-12 w-12 animate-spin mx-auto text-brand" />
           <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Cargando Liquidación...</p>
         </div>
       </div>
@@ -106,15 +109,15 @@ export default function ResumenPublicoPage() {
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b pb-8 border-zinc-200/60 transition-all">
            <div className="flex items-center gap-6">
               <div className="bg-white p-3 rounded-2xl shadow-xl shadow-blue-100 border border-blue-50">
-                <img src="/uar-logo.png" alt="UAR" className="h-16 w-16 object-contain" />
+                <Image src={BRAND.logo} alt={BRAND.nombre} width={64} height={64} className="h-16 w-16 object-contain" />
               </div>
               <div className="space-y-4">
-                <div className="bg-[#003399] inline-block px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-[0.2em] shadow-lg shadow-blue-100 animate-in fade-in slide-in-from-left-4 duration-500">
-                  Oficial UAR | Colegio de Árbitros
+                <div className="bg-brand inline-block px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-[0.2em] shadow-lg shadow-blue-100 animate-in fade-in slide-in-from-left-4 duration-500">
+                  Oficial {BRAND.nombre} | {BRAND.nombreLargo}
                 </div>
                 <div className="space-y-1">
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic text-zinc-900 tracking-tight leading-none group">
-                    Planilla de <span className="text-[#003399] drop-shadow-sm transition-all hover:text-blue-500">Pagos</span>
+                    Planilla de <span className="text-brand drop-shadow-sm transition-all hover:text-brand-hover">Pagos</span>
                   </h1>
                   <p className="text-zinc-400 font-bold text-xs sm:text-sm tracking-tight">Liquidación Semanal de Actividades Arbitrales</p>
                 </div>
@@ -122,7 +125,7 @@ export default function ResumenPublicoPage() {
            </div>
            <div className="bg-white border border-zinc-100 p-3 sm:p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center gap-4 min-w-[180px] self-start md:self-end hover:scale-[1.02] transition-transform cursor-default underline-offset-4">
               <div className="bg-blue-50 p-3 rounded-2xl">
-                 <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-[#003399]" />
+                 <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-brand" />
               </div>
               <div>
                  <span className="text-[9px] font-black text-zinc-400 block tracking-[0.1em] leading-none mb-1">SEMANA / AÑO</span>
@@ -162,7 +165,7 @@ export default function ResumenPublicoPage() {
 
         <footer className="text-center pt-10 pb-20 border-t border-dashed">
            <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">
-                Este es un documento oficial del sistema de gestión de pagos UAR.
+                Este es un documento oficial del sistema de gestión de pagos {BRAND.nombre}.
            </p>
            <p className="text-zinc-300 text-[10px] italic mt-1 font-medium">
              Generado automáticamente - {new Date().toLocaleDateString('es-AR')}

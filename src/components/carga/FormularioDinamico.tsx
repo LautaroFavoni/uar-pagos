@@ -149,7 +149,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <h3 className="font-extrabold text-[#003399] flex items-center gap-2 text-lg italic">
+            <h3 className="font-extrabold text-brand flex items-center gap-2 text-lg italic">
               <span className="h-2 w-2 rounded-full bg-blue-500" />
               Designación de Roles
             </h3>
@@ -168,7 +168,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
           </div>
 
           <div className="space-y-6">
-            <h3 className="font-extrabold text-[#003399] flex items-center gap-2 text-lg italic">
+            <h3 className="font-extrabold text-brand flex items-center gap-2 text-lg italic">
               <span className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
               Viáticos (Maneja?)
             </h3>
@@ -188,7 +188,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
                     <Button
                       key={p.id}
                       variant={viaticoArbitroId === selectedArbitros[p.rol] ? "default" : "outline"}
-                      className={viaticoArbitroId === selectedArbitros[p.rol] ? "bg-[#003399] text-white rounded-xl h-10 shadow-lg shadow-blue-100" : "rounded-xl h-10 border-zinc-100"}
+                      className={viaticoArbitroId === selectedArbitros[p.rol] ? "bg-brand text-white rounded-xl h-10 shadow-lg shadow-blue-100" : "rounded-xl h-10 border-zinc-100"}
                       disabled={!selectedArbitros[p.rol]}
                       onClick={() => setViaticoArbitroId(selectedArbitros[p.rol])}
                     >
@@ -202,7 +202,7 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
         </div>
 
         <Button 
-          className="w-full bg-[#003399] hover:bg-[#002266] text-white h-16 rounded-[2rem] font-black text-xl italic shadow-2xl shadow-blue-200 transition-all active:scale-95"
+          className="w-full bg-brand hover:bg-brand-hover text-white h-16 rounded-[2rem] font-black text-xl italic shadow-2xl shadow-blue-200 transition-all active:scale-95"
           onClick={handleAdd}
         >
           {liga.nombre.toLowerCase().includes('partido') ? 'AGREGAR PARTIDO A LA LISTA' : 'GUARDAR DESIGNACIÓN'}

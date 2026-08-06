@@ -19,8 +19,9 @@ import {
   ChevronRight
 } from "lucide-react"
 
+import { BRAND } from "@/lib/brand"
+
 export default function ResumenPagosPage() {
-  console.log("UAR Dashboard v1.1 - Azul Institucional Sincronizado")
   const [loading, setLoading] = useState(true)
   const [closing, setClosing] = useState(false)
   const [designaciones, setDesignaciones] = useState<Designacion[]>([])
@@ -219,11 +220,11 @@ export default function ResumenPagosPage() {
     <div className="space-y-8 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-           <div className="bg-[#003399] p-3 rounded-2xl shadow-xl shadow-blue-100 italic font-black text-white text-xl">
-              UAR
+           <div className="bg-brand p-3 rounded-2xl shadow-xl shadow-blue-100 italic font-black text-white text-xl">
+              {BRAND.nombre}
            </div>
            <div>
-            <h2 className="text-3xl font-black tracking-tight text-[#003399]"> Resumen de Pagos</h2>
+            <h2 className="text-3xl font-black tracking-tight text-brand"> Resumen de Pagos</h2>
             <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase text-xs mt-1">
               <Calendar className="h-3 w-3" />
               Liquidación Semana {semana} — {anio}
@@ -258,7 +259,7 @@ export default function ResumenPagosPage() {
               <Share2 className="h-4 w-4" /> Compartir Link
             </Button>
             <Button 
-              className="bg-[#003399] hover:bg-[#003399]/90 text-white gap-2 font-bold h-11 px-6 rounded-xl shadow-lg shadow-blue-200" 
+              className="bg-brand hover:bg-brand-hover text-white gap-2 font-bold h-11 px-6 rounded-xl shadow-lg shadow-blue-200" 
               onClick={handleCerrarSemana}
               disabled={closing || arbitrosIds.length === 0}
             >
@@ -269,7 +270,7 @@ export default function ResumenPagosPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="bg-[#003399] text-blue-50 p-6 rounded-2xl shadow-xl shadow-blue-900/20 flex flex-col justify-center">
+        <div className="bg-brand text-blue-50 p-6 rounded-2xl shadow-xl shadow-blue-900/20 flex flex-col justify-center">
           <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Total General de la Semana</span>
           <span className="text-3xl font-black">{formatARS(totalGeneral)}</span>
         </div>
@@ -310,7 +311,7 @@ export default function ResumenPagosPage() {
                 <RefreshCcw className="h-8 w-8 text-zinc-300" />
             </div>
             <p className="text-zinc-500 font-medium">No hay designaciones pendientes de pago para esta semana</p>
-            <Button variant="link" className="text-[#1B5E20]" onClick={fetchData}>Recargar datos</Button>
+            <Button variant="link" className="text-brand" onClick={fetchData}>Recargar datos</Button>
           </div>
         )}
       </div>

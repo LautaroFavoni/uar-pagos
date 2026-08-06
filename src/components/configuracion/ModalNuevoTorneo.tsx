@@ -102,7 +102,7 @@ export function ModalNuevoTorneo({ isOpen, onClose, onSuccess }: ModalNuevoTorne
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-[#1B5E20]" />
+            <Trophy className="h-5 w-5 text-brand" />
             Configuración de Nuevo Torneo
           </DialogTitle>
         </DialogHeader>
@@ -166,7 +166,7 @@ export function ModalNuevoTorneo({ isOpen, onClose, onSuccess }: ModalNuevoTorne
             Cancelar
           </Button>
           <Button
-            className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white rounded-xl"
+            className="bg-brand hover:bg-brand-hover text-white rounded-xl"
             onClick={handleSave}
             disabled={loading}
           >

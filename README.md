@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UNAR — Sistema de Liquidación de Árbitros
 
-## Getting Started
+Sistema web para la gestión de designaciones, liquidaciones y pagos de árbitros de la **Unión de Árbitros (UNAR)**.
 
-First, run the development server:
+## Stack Tecnológico
+
+- **Framework**: Next.js 16 (App Router)
+- **Estilos**: Tailwind CSS 4 + shadcn/ui
+- **Base de datos**: Supabase (PostgreSQL)
+- **Deploy**: Vercel (CI/CD automático desde `main`)
+
+## Instalación
 
 ```bash
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/uar-pagos.git
+cd uar-pagos
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar variables de entorno
+cp .env.example .env.local
+# Editar .env.local con tus credenciales de Supabase
+
+# 4. Iniciar en desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000) en el navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables de Entorno
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Descripción |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anónima (pública) de Supabase |
 
-## Learn More
+## Estructura del Proyecto
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Rutas (App Router)
+│   ├── dashboard/          # Panel principal (protegido)
+│   │   ├── carga-rapida/   # Carga de designaciones
+│   │   ├── configuracion/  # ABM de árbitros, torneos, viáticos
+│   │   ├── descuentos/     # Gestión de descuentos
+│   │   ├── designaciones/  # Visualización de designaciones
+│   │   ├── historial/      # Historial de semanas anteriores
+│   │   └── resumen/        # Cierre semanal y pagos
+│   ├── login/              # Autenticación
+│   └── p/[id]/             # Vista pública de pagos (solo lectura)
+├── components/             # Componentes reutilizables
+│   ├── carga/              # Formularios de carga
+│   ├── configuracion/      # Modales de configuración
+│   ├── designaciones/      # Edición de designaciones
+│   ├── pagos/              # Tabla de pagos (FilaArbitro)
+│   ├── shared/             # Componentes compartidos
+│   └── ui/                 # Primitivos shadcn/ui
+├── lib/                    # Utilidades y configuración
+│   ├── brand.ts            # Marca centralizada (nombre, logo, colores)
+│   ├── calculos.ts         # Funciones de cálculo
+│   ├── supabase/           # Cliente y servidor Supabase
+│   └── types.ts            # Tipos TypeScript
+└── public/                 # Assets estáticos
+    └── logo.png            # Logo UNAR
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Personalización de Marca
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Todo lo relacionado a la marca está centralizado:
 
-## Deploy on Vercel
+- **`src/lib/brand.ts`** — Nombre, nombre largo, logo y colores
+- **`src/app/globals.css`** — Variables CSS `--color-brand` y `--color-brand-hover`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Para cambiar el color de marca, modificar una sola variable en `globals.css`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy en Vercel
+
+El proyecto hace deploy automático al pushear a `main`:
+
+```bash
+git add .
+git commit -m "descripción del cambio"
+git push origin main
+```
+
+Vercel detecta el push y despliega automáticamente.
+
+## Migraciones de Base de Datos
+
+Las migraciones SQL se encuentran en `supabase/migrations/`. Para aplicarlas, ejecutar el contenido directamente en el **SQL Editor** de Supabase.

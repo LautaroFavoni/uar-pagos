@@ -141,9 +141,9 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
   return (
     <Card className="border-blue-200 shadow-lg bg-white/80 backdrop-blur-md rounded-[2.5rem] overflow-hidden">
       <CardHeader className="bg-blue-50/50 border-b border-blue-100">
-        <CardTitle className="text-[#003399] flex justify-between items-center text-2xl font-black italic">
+        <CardTitle className="text-brand flex justify-between items-center text-2xl font-black italic">
           {liga.nombre.toUpperCase()}
-          <span className="text-[10px] font-black bg-[#003399] px-3 py-1 rounded-full text-white tracking-widest">
+          <span className="text-[10px] font-black bg-brand px-3 py-1 rounded-full text-white tracking-widest">
             CARGA FLEXIBLE
           </span>
         </CardTitle>
@@ -184,7 +184,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
         {/* Carga Individual */}
         <div className="space-y-4 border-t pt-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-6 w-1.5 bg-[#003399] rounded-full shadow-[0_0_10px_rgba(0,51,153,0.3)]"></div>
+            <div className="h-6 w-1.5 bg-brand rounded-full shadow-[0_0_10px_rgba(0,51,153,0.3)]"></div>
             <h4 className="font-black italic text-zinc-800 tracking-tight">AGREGAR ACTIVIDAD</h4>
           </div>
           
@@ -218,7 +218,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
                                         placeholder="0"
                                         value={currentQuantities[r.rol] || ""} 
                                         onChange={(e) => handleQuantityChange(r.rol, parseInt(e.target.value) || 0)}
-                                        className="h-10 rounded-xl border-zinc-200 focus:ring-[#003399] focus:border-[#003399] font-black text-center text-blue-600"
+                                        className="h-10 rounded-xl border-zinc-200 focus:ring-brand focus:border-brand font-black text-center text-blue-600"
                                     />
                                 </div>
                             </div>
@@ -228,7 +228,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
                     <Button 
                         onClick={handleAddToList}
                         disabled={!currentArbitroId}
-                        className="w-full h-14 rounded-2xl bg-[#003399] hover:bg-[#002266] text-white gap-3 font-black shadow-xl shadow-blue-200 transition-all active:scale-95 text-lg italic"
+                        className="w-full h-14 rounded-2xl bg-brand hover:bg-brand-hover text-white gap-3 font-black shadow-xl shadow-blue-200 transition-all active:scale-95 text-lg italic"
                     >
                         <Plus className="h-5 w-5" /> SUMAR ACTIVIDAD AL PARTIDO
                     </Button>
@@ -273,7 +273,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
                         className={cn(
                             "px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all tracking-widest",
                             manejaId === item.arbitroId 
-                                ? "bg-[#003399] text-white shadow-lg shadow-blue-200" 
+                                ? "bg-brand text-white shadow-lg shadow-blue-200" 
                                 : "bg-zinc-100 text-zinc-400 hover:bg-zinc-200"
                         )}
                     >
@@ -295,7 +295,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
             <div className="pt-6">
                 <Button 
                     onClick={handleConfirmTotal}
-                    className="w-full bg-[#003399] hover:bg-[#002266] text-white gap-3 h-16 rounded-[2rem] font-black italic shadow-2xl shadow-blue-200 text-xl transition-all active:scale-95"
+                    className="w-full bg-brand hover:bg-brand-hover text-white gap-3 h-16 rounded-[2rem] font-black italic shadow-2xl shadow-blue-200 text-xl transition-all active:scale-95"
                 >
                     <Save className="h-6 w-6" />
                     CARGAR {listaLocal.length} ACTIVIDADES

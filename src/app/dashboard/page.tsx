@@ -22,6 +22,8 @@ import { getSemanaInfo, formatARS } from "@/lib/calculos"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
+import { BRAND } from "@/lib/brand"
+
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -84,14 +86,14 @@ export default function DashboardPage() {
       {/* Header Sección */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-[#1B5E20] font-black uppercase tracking-[0.2em] text-[10px]">
-            <span className="w-8 h-[2px] bg-[#1B5E20]"></span>
+          <div className="flex items-center gap-2 text-brand font-black uppercase tracking-[0.2em] text-[10px]">
+            <span className="w-8 h-[2px] bg-brand"></span>
             System Overview
           </div>
           <h2 className="text-4xl font-black tracking-tighter text-zinc-900 flex items-center gap-3">
             Panel de Control
-            <span className="text-[#1B5E20] opacity-20">/</span>
-            <span className="text-zinc-400 font-medium text-2xl">UAR</span>
+            <span className="text-brand opacity-20">/</span>
+            <span className="text-zinc-400 font-medium text-2xl">{BRAND.nombre}</span>
           </h2>
           <p className="text-zinc-500 font-medium capitalize flex items-center gap-2">
             <CalendarDays className="h-4 w-4" />
@@ -106,7 +108,7 @@ export default function DashboardPage() {
                 </Button>
             </Link>
             <Link href="/dashboard/carga-rapida">
-                <Button className="h-12 bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white font-bold px-8 rounded-xl shadow-lg shadow-[#1B5E20]/20 gap-2">
+                <Button className="h-12 bg-brand hover:bg-brand-hover text-white font-bold px-8 rounded-xl shadow-lg shadow-blue-200 gap-2">
                     <Zap className="h-4 w-4 fill-white" />
                     CARGA RÁPIDA
                 </Button>
@@ -193,7 +195,7 @@ export default function DashboardPage() {
       <div className="grid gap-8 md:grid-cols-5 lg:grid-cols-6 mt-12">
         <div className="md:col-span-3 lg:col-span-4 space-y-6">
             <h3 className="text-xl font-black italic tracking-tight flex items-center gap-3">
-                <span className="w-2 h-6 bg-[#1B5E20] rounded-full"></span>
+                <span className="w-2 h-6 bg-brand rounded-full"></span>
                 ACCIONES ESTRATÉGICAS
             </h3>
             
@@ -263,15 +265,15 @@ function ActionCard({ title, desc, href, icon: Icon, primary = false }: any) {
             <div className={cn(
                 "p-6 h-full rounded-[2rem] border transition-all duration-300 flex flex-col justify-between",
                 primary 
-                    ? "bg-[#1B5E20] border-[#1B5E20] text-white shadow-xl shadow-[#1B5E20]/20 hover:-translate-y-1" 
-                    : "bg-white border-zinc-100 hover:border-[#1B5E20]/30 hover:shadow-xl hover:-translate-y-1"
+                    ? "bg-brand border-brand text-white shadow-xl shadow-blue-200 hover:-translate-y-1" 
+                    : "bg-white border-zinc-100 hover:border-brand/30 hover:shadow-xl hover:-translate-y-1"
             )}>
                 <div>
                     <div className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center mb-6",
                         primary ? "bg-white/10" : "bg-zinc-50"
                     )}>
-                        <Icon className={cn("h-5 w-5", primary ? "text-white" : "text-[#1B5E20]")} />
+                        <Icon className={cn("h-5 w-5", primary ? "text-white" : "text-brand")} />
                     </div>
                     <h4 className="font-black italic text-lg mb-2">{title}</h4>
                     <p className={cn(

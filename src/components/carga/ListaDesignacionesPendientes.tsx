@@ -96,7 +96,7 @@ export function ListaDesignacionesPendientes({
       <Button 
         onClick={onConfirm}
         disabled={isSubmitting}
-        className="w-full bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white h-16 text-xl font-bold shadow-2xl shadow-[#1B5E20]/20 gap-3 rounded-2xl"
+        className="w-full bg-brand hover:bg-brand-hover text-white h-16 text-xl font-bold shadow-2xl shadow-blue-200 gap-3 rounded-2xl"
       >
         <CheckCircle2 className="h-6 w-6" />
         {isSubmitting ? "GUARDANDO..." : "CONFIRMAR TODAS"}

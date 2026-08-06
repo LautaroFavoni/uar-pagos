@@ -62,7 +62,7 @@ export function ViaticoPicker({ viaticos, value, onChange }: ViaticoPickerProps)
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4 text-[#1B5E20]",
+                      "mr-2 h-4 w-4 text-brand",
                       value === v.localidad ? "opacity-100" : "opacity-0"
                     )}
                   />

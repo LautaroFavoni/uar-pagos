@@ -136,7 +136,7 @@ export function FormularioPrincipal({ liga, arbitros, precios, viaticos, onAdd }
                         id={`maneja-${p.id}`}
                         type="radio" 
                         name="maneja" 
-                        className="h-5 w-5 accent-[#1B5E20]"
+                        className="h-5 w-5 accent-brand"
                         checked={manejaId === seleccion[p.rol]}
                         onChange={() => setManejaId(seleccion[p.rol])}
                       />
@@ -150,7 +150,7 @@ export function FormularioPrincipal({ liga, arbitros, precios, viaticos, onAdd }
 
         <Button 
           onClick={handleAdd}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2 h-12 text-lg shadow-lg"
+          className="w-full bg-brand hover:bg-brand-hover text-white gap-2 h-12 text-lg shadow-lg"
         >
           <Plus className="h-5 w-5" />
           Agregar a la lista

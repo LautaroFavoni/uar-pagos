@@ -57,7 +57,7 @@ export function ModalNuevoArbitro({ isOpen, onClose, onSuccess }: ModalNuevoArbi
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-[#1B5E20]" />
+            <UserPlus className="h-5 w-5 text-brand" />
             Nuevo Árbitro
           </DialogTitle>
         </DialogHeader>
@@ -78,7 +78,7 @@ export function ModalNuevoArbitro({ isOpen, onClose, onSuccess }: ModalNuevoArbi
             Cancelar
           </Button>
           <Button 
-            className="bg-[#1B5E20] hover:bg-[#1B5E20]/90 text-white" 
+            className="bg-brand hover:bg-brand-hover text-white" 
             onClick={handleSave}
             disabled={loading}
           >

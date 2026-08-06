@@ -215,7 +215,7 @@ export default function ConfiguracionPage() {
     <div className="space-y-8 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-[#003399]">Configuración</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-brand">Configuración</h2>
           <p className="text-muted-foreground">Administración de árbitros, honorarios y viáticos.</p>
         </div>
         <Button variant="outline" size="sm" onClick={fetchData} disabled={loading} className="gap-2">
@@ -256,7 +256,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Habilita o deshabilita árbitros para la carga rápida.</CardDescription>
               </div>
               <Button 
-                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
+                className="bg-brand hover:bg-brand-hover gap-2"
                 onClick={() => setIsModalArbitroOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -310,7 +310,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Crea y modifica las ligas disponibles en el sistema.</CardDescription>
               </div>
               <Button 
-                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
+                className="bg-brand hover:bg-brand-hover gap-2"
                 onClick={() => setIsModalTorneoOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -407,7 +407,7 @@ export default function ConfiguracionPage() {
                 <CardDescription>Configura los costos de traslado por localidad.</CardDescription>
               </div>
               <Button 
-                className="bg-[#003399] hover:bg-[#003399]/90 gap-2"
+                className="bg-brand hover:bg-brand-hover gap-2"
                 onClick={() => setIsModalLocalidadOpen(true)}
               >
                 <Plus className="h-4 w-4" />
@@ -525,7 +525,7 @@ function FilaEditable({ initialValue, initialLabel2, label1, onSave, onSaveLabel
           variant={hasChanged ? "default" : "ghost"}
           disabled={!hasChanged}
           onClick={handleSave}
-          className={hasChanged ? "bg-[#003399] hover:bg-[#003399]/90" : ""}
+          className={hasChanged ? "bg-brand hover:bg-brand-hover" : ""}
         >
           <Save className="h-4 w-4" />
         </Button>
@@ -588,7 +588,7 @@ function FilaViaticoEditable({ initialValue, initialLocalidad, onSave, onDelete 
             variant={hasChanged ? "default" : "ghost"}
             disabled={!hasChanged}
             onClick={handleSave}
-            className={hasChanged ? "bg-[#003399] hover:bg-[#003399]/90" : ""}
+            className={hasChanged ? "bg-brand hover:bg-brand-hover" : ""}
           >
             <Save className="h-4 w-4" />
           </Button>

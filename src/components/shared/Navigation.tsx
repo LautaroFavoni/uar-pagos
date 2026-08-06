@@ -15,6 +15,9 @@ import {
   Scissors
 } from "lucide-react"
 
+import Image from "next/image"
+import { BRAND } from "@/lib/brand"
+
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Designaciones", href: "/dashboard/designaciones", icon: FileEdit },
@@ -43,10 +46,10 @@ export function Navigation() {
       <aside className="hidden md:flex flex-col w-64 bg-zinc-900 text-zinc-400 fixed inset-y-0 left-0">
         <div className="p-8 flex flex-col items-center">
           <div className="bg-white p-2 rounded-2xl shadow-lg mb-4">
-            <img src="/uar-logo.png" alt="Logo UAR" className="h-16 w-16 object-contain" />
+            <Image src={BRAND.logo} alt={BRAND.nombre} width={64} height={64} className="h-16 w-16 object-contain" />
           </div>
           <h1 className="text-sm font-black text-white italic tracking-widest text-center">
-            COLEGIO ÁRBITROS
+            {BRAND.nombreLargo.toUpperCase()}
           </h1>
         </div>
         
@@ -60,7 +63,7 @@ export function Navigation() {
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium",
                   isActive 
-                    ? "bg-[#003399] text-white" 
+                    ? "bg-brand text-white" 
                     : "hover:bg-zinc-800 hover:text-white"
                 )}
               >
@@ -93,13 +96,13 @@ export function Navigation() {
               className={cn(
                 "flex flex-col items-center justify-center min-w-[70px] gap-1 px-1 py-1 rounded-xl transition-all",
                 isActive 
-                  ? "text-[#003399]" 
+                  ? "text-brand" 
                   : "text-zinc-500"
               )}
             >
               <div className={cn(
                 "p-2 rounded-full transition-all",
-                isActive ? "bg-[#003399]/10" : ""
+                isActive ? "bg-brand/10" : ""
               )}>
                 <item.icon className={cn("h-6 w-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
               </div>

@@ -81,7 +81,7 @@ export default function DescuentosPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-[#1B5E20] flex items-center gap-3">
+          <h2 className="text-3xl font-black tracking-tight text-brand flex items-center gap-3">
              <Scissors className="h-8 w-8" />
              Gestión de Descuentos
           </h2>
@@ -105,14 +105,14 @@ export default function DescuentosPage() {
       <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-white/80 backdrop-blur-md">
         <CardHeader className="bg-zinc-50/50 border-b p-6">
           <CardTitle className="text-xl font-black text-zinc-800 flex items-center gap-2">
-            <Filter className="h-5 w-5 text-[#1B5E20]" />
+            <Filter className="h-5 w-5 text-brand" />
             Listado de Descuentos - Semana {semana}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 space-y-4">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1B5E20]"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand"></div>
               <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">Cargando datos...</p>
             </div>
           ) : descuentos.length > 0 ? (
