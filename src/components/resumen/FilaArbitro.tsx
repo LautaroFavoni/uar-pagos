@@ -122,6 +122,10 @@ export function FilaArbitro({
   const totalAPagar = subtotalHonorarios + subtotalViaticos - totalDescuentos
   const neto = localLiquidacion?.neto ?? totalAPagar
   const totalDeudaPendiente = deudas.reduce((acc, d) => acc + d.monto_actual, 0)
+  // Proyección de lo que cerrar_semana va a cobrar de deuda esta semana: el
+  // mínimo entre el saldo deudor y el neto disponible (no se puede cobrar más
+  // de lo que se le paga, ni más de lo que debe). Solo aplica antes de cerrar.
+  const proyeccionCobroDeuda = Math.min(totalDeudaPendiente, Math.max(totalAPagar, 0))
 
   if (designaciones.length === 0 && descuentos.length === 0) return null
 
@@ -325,9 +329,20 @@ export function FilaArbitro({
                           </div>
                         ))}
                       </div>
-                      <p className="mt-3 text-[9px] text-red-400 italic font-medium leading-tight">
-                        * Al cerrar la semana, se cobrará automáticamente el monto disponible (Neto) para reducir este saldo.
-                      </p>
+                      {!localLiquidacion?.id && (
+                        <>
+                          {proyeccionCobroDeuda > 0 ? (
+                            <div className="mt-3 flex justify-between items-center px-3 py-2 rounded-xl bg-red-100/60 border border-red-200">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-red-700">Se cobrará al cerrar esta semana</span>
+                              <span className="font-black text-red-700 text-sm">{formatARS(proyeccionCobroDeuda)}</span>
+                            </div>
+                          ) : (
+                            <p className="mt-3 text-[9px] text-red-400 italic font-medium leading-tight">
+                              * El neto disponible esta semana no alcanza para cobrar deuda.
+                            </p>
+                          )}
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
