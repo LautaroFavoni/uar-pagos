@@ -18,12 +18,16 @@ export interface Precio {
   liga_id: string;
   rol: string;
   monto: number;
+  vigente_desde: string;
+  vigente_hasta: string | null;
 }
 
 export interface Viatico {
   id: string;
   localidad: string;
   monto: number;
+  vigente_desde: string;
+  vigente_hasta: string | null;
 }
 
 export interface Designacion {
@@ -95,5 +99,35 @@ export interface CobroLiga {
   fecha_cobro: string;
   metodo_pago: MetodoPago | null;
   observaciones?: string | null;
+  created_at?: string;
+}
+
+export type EstadoLiquidacion = 'pendiente' | 'pagado';
+export type MetodoPagoLiquidacion = 'efectivo' | 'transferencia' | 'mixto';
+
+export interface Liquidacion {
+  id?: string;
+  arbitro_id: string;
+  semana: number;
+  anio: number;
+  subtotal_honorarios: number;
+  subtotal_viaticos: number;
+  total_descuentos: number;
+  total_deuda_cobrada: number;
+  neto: number;
+  estado: EstadoLiquidacion;
+  metodo_pago: MetodoPagoLiquidacion | null;
+  fecha_pago?: string | null;
+}
+
+export type TipoMovimientoDeuda = 'alta' | 'cobro' | 'ajuste';
+
+export interface DeudaMovimiento {
+  id?: string;
+  deuda_id: string;
+  tipo: TipoMovimientoDeuda;
+  monto: number;
+  semana?: number | null;
+  anio?: number | null;
   created_at?: string;
 }
