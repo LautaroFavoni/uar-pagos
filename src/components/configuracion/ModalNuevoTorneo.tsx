@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner"
 import { Trophy, Loader2, Plus, Minus } from "lucide-react"
 import { TipoLiga } from "@/lib/types"
+import { format } from "date-fns"
 
 interface ModalNuevoTorneoProps {
   isOpen: boolean
@@ -72,10 +73,14 @@ export function ModalNuevoTorneo({ isOpen, onClose, onSuccess }: ModalNuevoTorne
       if (errorLiga) throw errorLiga
 
       // 2. Crear precios base para los roles definidos
+      // vigente_desde explícito (fecha local del navegador, no el default de la DB
+      // que usa UTC): evita que quede "un día adelantado" a la noche, hora Argentina.
+      const hoy = format(new Date(), "yyyy-MM-dd")
       const preciosInsert = roles.map(rol => ({
         liga_id: liga.id,
         rol: rol.trim() || "Arbitro",
-        monto: 0
+        monto: 0,
+        vigente_desde: hoy
       }))
 
       const { error: errorPrecios } = await supabase

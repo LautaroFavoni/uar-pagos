@@ -19,7 +19,7 @@ interface FormularioDinamicoProps {
   onAdd: (designaciones: Designacion[]) => void
 }
 
-import { getSemanaInfo } from "@/lib/calculos"
+import { getSemanaInfo, preciosVigentesDeLiga, viaticoVigente, viaticosVigentes } from "@/lib/calculos"
 
 export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }: FormularioDinamicoProps) {
   const [fecha, setFecha] = useState(format(new Date(), "yyyy-MM-dd"))
@@ -45,13 +45,15 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
     setAnio(info.anio)
   }
 
-  const rolesDeLiga = precios.filter(p => p.liga_id === liga.id)
+  // Precios/viáticos vigentes a la fecha del partido: una designación con fecha
+  // vieja toma el valor que regía en ese momento, no el actual.
+  const rolesDeLiga = preciosVigentesDeLiga(precios, liga.id, fecha)
 
   const handleAdd = () => {
     const designaciones: Designacion[] = []
-    
-    // Obtener el monto del viático seleccionado
-    const vMonto = viaticos.find(v => v.localidad === viaticoLocalidad)?.monto || 0
+
+    // Obtener el monto del viático seleccionado (vigente a la fecha del partido)
+    const vMonto = viaticoVigente(viaticos, viaticoLocalidad, fecha)?.monto || 0
 
     rolesDeLiga.forEach(p => {
       const arbId = selectedArbitros[p.rol]
@@ -175,10 +177,10 @@ export function FormularioDinamico({ liga, arbitros, precios, viaticos, onAdd }:
             <div className="space-y-4 bg-zinc-50/50 p-6 rounded-3xl border border-zinc-100">
               <div className="space-y-2">
                 <Label className="text-zinc-600 font-bold ml-1">Localidad</Label>
-                <ViaticoPicker 
-                  viaticos={viaticos} 
-                  value={viaticoLocalidad} 
-                  onChange={setViaticoLocalidad} 
+                <ViaticoPicker
+                  viaticos={viaticosVigentes(viaticos, fecha)}
+                  value={viaticoLocalidad}
+                  onChange={setViaticoLocalidad}
                 />
               </div>
               <div className="space-y-2">

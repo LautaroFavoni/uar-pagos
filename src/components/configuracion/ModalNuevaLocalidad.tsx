@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { MapPin, Loader2 } from "lucide-react"
+import { format } from "date-fns"
 
 interface ModalNuevaLocalidadProps {
   isOpen: boolean
@@ -27,11 +28,14 @@ export function ModalNuevaLocalidad({ isOpen, onClose, onSuccess }: ModalNuevaLo
 
     setLoading(true)
     try {
+      // vigente_desde explícito (fecha local del navegador, no el default de la DB
+      // que usa UTC): evita que quede "un día adelantado" a la noche, hora Argentina.
       const { error } = await supabase
         .from('viaticos')
-        .insert([{ 
-          localidad: localidad.trim(), 
-          monto 
+        .insert([{
+          localidad: localidad.trim(),
+          monto,
+          vigente_desde: format(new Date(), "yyyy-MM-dd")
         }])
 
       if (error) throw error

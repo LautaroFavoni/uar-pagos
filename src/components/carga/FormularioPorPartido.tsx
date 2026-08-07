@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ViaticoPicker } from "../shared/ViaticoPicker"
 import { ArbitroSelector } from "../shared/ArbitroSelector"
-import { formatARS, getSemanaInfo } from "@/lib/calculos"
+import { formatARS, getSemanaInfo, preciosVigentesDeLiga, viaticoVigente, viaticosVigentes } from "@/lib/calculos"
 import { Plus, Trash2, Users, Save } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -43,7 +43,9 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
   const [observacionesGeneral, setObservacionesGeneral] = useState("")
   const [listaLocal, setListaLocal] = useState<SeleccionadoLocal[]>([])
 
-  const rolesDisponibles = precios.filter(p => p.liga_id === liga.id)
+  // Precios vigentes a la fecha del partido: una designación con fecha vieja
+  // toma el valor que regía en ese momento, no el actual.
+  const rolesDisponibles = preciosVigentesDeLiga(precios, liga.id, fecha)
   
   const handleQuantityChange = (rol: string, val: number) => {
     setCurrentQuantities(prev => ({
@@ -103,7 +105,7 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
     if (listaLocal.length === 0) return
 
     const { semana, anio } = getSemanaInfo(fecha)
-    const montoViat = viaticos.find(v => v.localidad === viaticoLocalidad)?.monto || 0
+    const montoViat = viaticoVigente(viaticos, viaticoLocalidad, fecha)?.monto || 0
 
     const designaciones: Designacion[] = listaLocal.map(item => {
       const isManejador = item.arbitroId === manejaId
@@ -174,10 +176,10 @@ export function FormularioPorPartido({ liga, arbitros, precios, viaticos, onAdd 
         </div>
         <div className="bg-blue-50/30 p-5 rounded-3xl border border-blue-100/50">
             <Label className="text-[10px] font-black uppercase text-blue-400 mb-3 block text-center tracking-[0.2em]">Sede / Localidad para Viático</Label>
-            <ViaticoPicker 
-              viaticos={viaticos} 
-              value={viaticoLocalidad} 
-              onChange={setViaticoLocalidad} 
+            <ViaticoPicker
+              viaticos={viaticosVigentes(viaticos, fecha)}
+              value={viaticoLocalidad}
+              onChange={setViaticoLocalidad}
             />
         </div>
 
