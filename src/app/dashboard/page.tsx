@@ -4,21 +4,22 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { 
-  Zap, 
-  Wallet, 
-  Users, 
+import {
+  Zap,
+  Wallet,
+  Users,
   CalendarDays,
   ArrowRight,
   TrendingUp,
   ShieldCheck,
   Bell,
-  Navigation2
+  Navigation2,
+  Landmark
 } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { getSemanaInfo, formatARS } from "@/lib/calculos"
+import { getSemanaInfo, formatARS, calcularSaldosLigas, sumaSaldosPendientes } from "@/lib/calculos"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
@@ -29,7 +30,8 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({
     totalAPagar: 0,
     designaciones: 0,
-    arbitrosActivos: 0
+    arbitrosActivos: 0,
+    pendienteCobroLigas: 0
   })
 
   const hoy = new Date()
@@ -43,7 +45,9 @@ export default function DashboardPage() {
         const [
           { data: des },
           { data: dct },
-          { count: arbCount }
+          { count: arbCount },
+          { data: crg },
+          { data: cbr }
         ] = await Promise.all([
           supabase
             .from('designaciones')
@@ -60,16 +64,24 @@ export default function DashboardPage() {
           supabase
             .from('arbitros')
             .select('*', { count: 'exact', head: true })
-            .eq('activo', true)
+            .eq('activo', true),
+          supabase
+            .from('cargos_liga')
+            .select('liga_id, monto'),
+          supabase
+            .from('cobros_liga')
+            .select('liga_id, monto')
         ])
 
         const totalHonorarios = des?.reduce((acc, d) => acc + d.total, 0) || 0
         const totalDescuentos = dct?.reduce((acc, d) => acc + d.monto, 0) || 0
+        const saldosLigas = calcularSaldosLigas(crg || [], cbr || [])
 
         setStats({
           totalAPagar: totalHonorarios - totalDescuentos,
           designaciones: des?.length || 0,
-          arbitrosActivos: arbCount || 0
+          arbitrosActivos: arbCount || 0,
+          pendienteCobroLigas: sumaSaldosPendientes(saldosLigas)
         })
       } catch (error) {
         console.error("Error fetching stats:", error)
@@ -115,6 +127,27 @@ export default function DashboardPage() {
             </Link>
         </div>
       </div>
+
+      {/* Card: Pendiente de cobro a ligas */}
+      <Link href="/dashboard/cobros-ligas" className="block group">
+        <div className="relative overflow-hidden rounded-[2rem] bg-zinc-900 text-white p-6 flex items-center justify-between gap-6 shadow-2xl transition-all group-hover:-translate-y-0.5">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full -mr-16 -mt-16" />
+          <div className="relative flex items-center gap-5">
+            <div className="bg-brand w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/40 shrink-0">
+              <Landmark className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-zinc-400 font-bold text-xs uppercase tracking-widest">Pendiente de Cobro a Ligas</CardTitle>
+              {loading ? (
+                <Skeleton className="h-8 w-40 mt-2 bg-zinc-800" />
+              ) : (
+                <div className="text-3xl font-black tracking-tighter">{formatARS(stats.pendienteCobroLigas)}</div>
+              )}
+            </div>
+          </div>
+          <ArrowRight className="relative h-5 w-5 text-zinc-500 transition-transform group-hover:translate-x-1 shrink-0" />
+        </div>
+      </Link>
 
       {/* Grid de Stats Premium */}
       <div className="grid gap-6 md:grid-cols-3">
@@ -207,19 +240,25 @@ export default function DashboardPage() {
                     icon={Wallet}
                     primary
                 />
-                <ActionCard 
+                <ActionCard
                     title="Designaciones"
                     desc="Gestionar ternas y generar reporte para WhatsApp."
                     href="/dashboard/designaciones"
                     icon={Navigation2}
                 />
-                <ActionCard 
+                <ActionCard
+                    title="Cobros a Ligas"
+                    desc="Registrar facturación y cobranza a cada torneo."
+                    href="/dashboard/cobros-ligas"
+                    icon={Landmark}
+                />
+                <ActionCard
                     title="Configuración"
                     desc="Ajustar tablas de honorarios, viáticos y personal."
                     href="/dashboard/configuracion"
                     icon={ShieldCheck}
                 />
-                <ActionCard 
+                <ActionCard
                     title="Historial"
                     desc="Consultar archivos de pagos y liquidaciones pasadas."
                     href="/dashboard/historial"

@@ -4,15 +4,16 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { 
-  LayoutDashboard, 
-  Zap, 
-  FileEdit, 
-  History, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Zap,
+  FileEdit,
+  History,
+  Settings,
   LogOut,
   Wallet,
-  Scissors
+  Scissors,
+  Landmark
 } from "lucide-react"
 
 import Image from "next/image"
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { label: "Descuentos", href: "/dashboard/descuentos", icon: Scissors },
   { label: "Carga Rápida", href: "/dashboard/carga-rapida", icon: Zap },
   { label: "Resumen", href: "/dashboard/resumen", icon: Wallet },
+  { label: "Cobros a Ligas", href: "/dashboard/cobros-ligas", icon: Landmark },
   { label: "Historial", href: "/dashboard/historial", icon: History },
   { label: "Config", href: "/dashboard/configuracion", icon: Settings },
 ]

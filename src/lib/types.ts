@@ -68,7 +68,32 @@ export interface DeudaPendiente {
   monto_inicial: number;
   monto_actual: number;
   created_at?: string;
-  
+
   // Virtual field
   arbitro_nombre?: string;
+}
+
+export type TipoCargoLiga = 'jornada' | 'partido' | 'arbitro' | 'otro';
+export type MetodoPago = 'efectivo' | 'transferencia' | 'cheque';
+
+export interface CargoLiga {
+  id?: string;
+  liga_id: string;
+  tipo: TipoCargoLiga | null;
+  concepto: string | null;
+  monto: number;
+  fecha: string;
+  semana?: number | null;
+  anio?: number | null;
+  created_at?: string;
+}
+
+export interface CobroLiga {
+  id?: string;
+  liga_id: string;
+  monto: number;
+  fecha_cobro: string;
+  metodo_pago: MetodoPago | null;
+  observaciones?: string | null;
+  created_at?: string;
 }
