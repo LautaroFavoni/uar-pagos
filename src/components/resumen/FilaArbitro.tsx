@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Designacion, Descuento, DeudaPendiente, Liquidacion, MetodoPagoLiquidacion } from "@/lib/types"
-import { formatARS } from "@/lib/calculos"
+import { formatARS, METODO_PAGO_LABEL } from "@/lib/calculos"
 import {
   ChevronDown,
   ChevronUp,
@@ -20,12 +20,6 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { ModalMetodoPago } from "@/components/resumen/ModalMetodoPago"
-
-const METODO_PAGO_LABEL: Record<MetodoPagoLiquidacion, string> = {
-  efectivo: "Efectivo",
-  transferencia: "Transferencia",
-  mixto: "Mixto",
-}
 
 interface FilaArbitroProps {
   arbitroId: string

@@ -1,6 +1,12 @@
 import { getISOWeek, getYear } from "date-fns"
 import { Precio, Viatico } from "./types"
 
+export const METODO_PAGO_LABEL: Record<string, string> = {
+  efectivo: "Efectivo",
+  transferencia: "Transferencia",
+  mixto: "Mixto",
+}
+
 /**
  * Calcula el número de semana ISO y el año para una fecha dada.
  */

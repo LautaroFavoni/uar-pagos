@@ -7,9 +7,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { History, Search, Download, ChevronLeft, ChevronRight } from "lucide-react"
-import { getSemanaInfo, formatARS } from "@/lib/calculos"
+import { History, Search, FileSpreadsheet, FileText, FileDown } from "lucide-react"
+import { getSemanaInfo, METODO_PAGO_LABEL } from "@/lib/calculos"
 import { FilaArbitro } from "@/components/resumen/FilaArbitro"
+import { exportExcel, exportCSV, exportPDF, FilaReporte } from "@/lib/export"
+import { Liquidacion } from "@/lib/types"
+
+interface ArbitroAgrupado {
+  id: string
+  nombre: string
+  designaciones: { monto_honorarios: number; monto_viatico: number }[]
+  descuentos: { monto: number }[]
+  liquidacion: Liquidacion | null
+}
 
 export default function HistorialPage() {
   const [loading, setLoading] = useState(false)
@@ -19,6 +29,7 @@ export default function HistorialPage() {
   const [semana, setSemana] = useState(semActual - 1)
   const [anio, setAnio] = useState(anioActual)
   const [data, setData] = useState<any[]>([])
+  const [exporting, setExporting] = useState<string | null>(null)
 
   const supabase = createClient()
 
@@ -138,6 +149,38 @@ export default function HistorialPage() {
     }
   }
 
+  const filasReporte: FilaReporte[] = (data as ArbitroAgrupado[]).map((arb) => {
+    const honorarios = arb.designaciones.reduce((acc, d) => acc + d.monto_honorarios, 0)
+    const viaticos = arb.designaciones.reduce((acc, d) => acc + d.monto_viatico, 0)
+    const descuentos = arb.descuentos.reduce((acc, d) => acc + d.monto, 0)
+    const deudaCobrada = arb.liquidacion?.total_deuda_cobrada ?? 0
+    const neto = arb.liquidacion?.neto ?? (honorarios + viaticos - descuentos)
+    const metodoPago = arb.liquidacion?.estado === 'pagado' && arb.liquidacion?.metodo_pago
+      ? (METODO_PAGO_LABEL[arb.liquidacion.metodo_pago] || arb.liquidacion.metodo_pago)
+      : "—"
+    return { arbitro: arb.nombre, honorarios, viaticos, descuentos, deudaCobrada, neto, metodoPago }
+  })
+
+  const exportMeta = {
+    titulo: "Liquidación Semanal",
+    periodo: `Semana ${semana} · ${anio}`,
+    filename: `liquidacion_sem${semana}_${anio}`,
+  }
+
+  const handleExport = async (tipo: 'excel' | 'csv' | 'pdf') => {
+    if (filasReporte.length === 0) return
+    setExporting(tipo)
+    try {
+      if (tipo === 'excel') await exportExcel(filasReporte, exportMeta)
+      if (tipo === 'csv') await exportCSV(filasReporte, exportMeta)
+      if (tipo === 'pdf') await exportPDF(filasReporte, exportMeta)
+    } catch (error) {
+      toast.error("Error al exportar")
+    } finally {
+      setExporting(null)
+    }
+  }
+
   return (
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -176,12 +219,19 @@ export default function HistorialPage() {
         </div>
       ) : data.length > 0 ? (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap gap-3">
             <h3 className="font-bold text-lg text-zinc-700">Liquidación Sem. {semana} - {anio}</h3>
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => window.print()}>
-              <Download className="h-4 w-4" />
-              Exportar / Imprimir
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => handleExport('excel')} disabled={!!exporting}>
+                <FileSpreadsheet className="h-4 w-4 text-emerald-600" /> Excel
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => handleExport('csv')} disabled={!!exporting}>
+                <FileDown className="h-4 w-4 text-zinc-600" /> CSV
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => handleExport('pdf')} disabled={!!exporting}>
+                <FileText className="h-4 w-4 text-red-600" /> PDF
+              </Button>
+            </div>
           </div>
           
           <div className="grid gap-4">

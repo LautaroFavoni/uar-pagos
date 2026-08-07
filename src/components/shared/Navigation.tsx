@@ -13,7 +13,8 @@ import {
   LogOut,
   Wallet,
   Scissors,
-  Landmark
+  Landmark,
+  BarChart3
 } from "lucide-react"
 
 import Image from "next/image"
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { label: "Resumen", href: "/dashboard/resumen", icon: Wallet },
   { label: "Cobros a Ligas", href: "/dashboard/cobros-ligas", icon: Landmark },
   { label: "Historial", href: "/dashboard/historial", icon: History },
+  { label: "Reportes", href: "/dashboard/reportes", icon: BarChart3 },
   { label: "Config", href: "/dashboard/configuracion", icon: Settings },
 ]
 
