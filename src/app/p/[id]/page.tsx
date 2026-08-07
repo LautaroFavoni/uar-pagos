@@ -13,10 +13,11 @@ import { BRAND } from "@/lib/brand"
 export default function ResumenPublicoPage() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<{ designaciones: any[], descuentos: any[], deudas: any[] }>({ 
-    designaciones: [], 
+  const [data, setData] = useState<{ designaciones: any[], descuentos: any[], deudas: any[], liquidaciones: any[] }>({
+    designaciones: [],
     descuentos: [],
-    deudas: [] 
+    deudas: [],
+    liquidaciones: []
   })
   const [error, setError] = useState<string | null>(null)
   
@@ -33,9 +34,10 @@ export default function ResumenPublicoPage() {
         const anio = parseInt(matchSemana[2])
 
         const [
-          { data: des, error: e1 }, 
+          { data: des, error: e1 },
           { data: dct, error: e2 },
-          { data: deudas, error: e3 }
+          { data: deudas, error: e3 },
+          { data: liquidaciones, error: e4 }
         ] = await Promise.all([
           supabase
             .from('designaciones')
@@ -51,15 +53,21 @@ export default function ResumenPublicoPage() {
           supabase
             .from('deudas_pendientes')
             .select('*')
-            .gt('monto_actual', 0)
+            .gt('monto_actual', 0),
+          supabase
+            .from('liquidaciones')
+            .select('*')
+            .eq('semana', semana)
+            .eq('anio', anio)
         ])
 
-        if (e1 || e2 || e3) throw new Error("Error al cargar datos")
-        
+        if (e1 || e2 || e3 || e4) throw new Error("Error al cargar datos")
+
         setData({
           designaciones: des?.map(d => ({ ...d, arbitro_nombre: d.arbitros?.nombre, liga_nombre: d.ligas?.nombre })) || [],
           descuentos: dct || [],
-          deudas: deudas || []
+          deudas: deudas || [],
+          liquidaciones: liquidaciones || []
         })
       } catch (err: any) {
         setError(err.message)
@@ -149,8 +157,7 @@ export default function ResumenPublicoPage() {
                    designaciones={ads}
                    descuentos={dcs}
                    deudas={data.deudas.filter(d => d.arbitro_id === arbId)}
-                   semana={Number(sPart)}
-                   anio={Number(aPart)}
+                   liquidacion={data.liquidaciones.find(l => l.arbitro_id === arbId) ?? null}
                    readonly={true}
                  />
                )

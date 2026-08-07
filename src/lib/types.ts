@@ -48,8 +48,7 @@ export interface Designacion {
   hora?: string;
   observaciones?: string;
   estado: 'pendiente' | 'pagado';
-  pagado?: boolean;
-  
+
   // Virtual field for UI
   arbitro_nombre?: string;
   liga_nombre?: string;

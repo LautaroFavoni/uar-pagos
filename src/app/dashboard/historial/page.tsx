@@ -27,7 +27,8 @@ export default function HistorialPage() {
     try {
       const [
         { data: des, error: errDes },
-        { data: dct, error: errDct }
+        { data: dct, error: errDct },
+        { data: liq, error: errLiq }
       ] = await Promise.all([
         supabase
           .from('designaciones')
@@ -40,14 +41,19 @@ export default function HistorialPage() {
           .select('*, arbitros(nombre)')
           .eq('semana', semana)
           .eq('anio', anio)
-          .eq('estado', 'liquidado')
+          .eq('estado', 'liquidado'),
+        supabase
+          .from('liquidaciones')
+          .select('*')
+          .eq('semana', semana)
+          .eq('anio', anio)
       ])
 
-      if (errDes || errDct) throw errDes || errDct
+      if (errDes || errDct || errLiq) throw errDes || errDct || errLiq
 
       // Agrupar por árbitro (similar a resumen)
       const agrupado: any = {}
-      
+
       des?.forEach((d: any) => {
         const id = d.arbitro_id
         if (!agrupado[id]) {
@@ -55,7 +61,8 @@ export default function HistorialPage() {
             id,
             nombre: d.arbitros?.nombre || "Desconocido",
             designaciones: [],
-            descuentos: []
+            descuentos: [],
+            liquidacion: null
           }
         }
         agrupado[id].designaciones.push(d)
@@ -68,10 +75,18 @@ export default function HistorialPage() {
             id,
             nombre: d.arbitros?.nombre || "Desconocido",
             designaciones: [],
-            descuentos: []
+            descuentos: [],
+            liquidacion: null
           }
         }
         agrupado[id].descuentos.push(d)
+      })
+
+      liq?.forEach((l: any) => {
+        const id = l.arbitro_id
+        if (agrupado[id]) {
+          agrupado[id].liquidacion = l
+        }
       })
 
       setData(Object.values(agrupado))
@@ -177,8 +192,7 @@ export default function HistorialPage() {
                 arbitroNombre={arb.nombre}
                 designaciones={arb.designaciones}
                 descuentos={arb.descuentos}
-                semana={semana}
-                anio={anio}
+                liquidacion={arb.liquidacion}
                 onRemoveDesignacion={handleDeleteDesignacion}
                 onRemoveDescuento={handleDeleteDescuento}
               />

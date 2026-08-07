@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Designacion, Descuento, DeudaPendiente } from "@/lib/types"
+import { Designacion, Descuento, DeudaPendiente, Liquidacion, MetodoPagoLiquidacion } from "@/lib/types"
 import { formatARS } from "@/lib/calculos"
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Plus, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Plus,
   Trash2,
   AlertCircle,
   CheckCircle2,
@@ -19,6 +19,13 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { ModalMetodoPago } from "@/components/resumen/ModalMetodoPago"
+
+const METODO_PAGO_LABEL: Record<MetodoPagoLiquidacion, string> = {
+  efectivo: "Efectivo",
+  transferencia: "Transferencia",
+  mixto: "Mixto",
+}
 
 interface FilaArbitroProps {
   arbitroId: string
@@ -29,9 +36,8 @@ interface FilaArbitroProps {
   onRemoveDescuento?: (id: string) => void
   onRemoveDesignacion?: (id: string) => void
   deudas?: DeudaPendiente[]
+  liquidacion?: Liquidacion | null
   readonly?: boolean
-  semana: number
-  anio: number
 }
 
 export function FilaArbitro({
@@ -43,50 +49,78 @@ export function FilaArbitro({
   onRemoveDescuento,
   onRemoveDesignacion,
   deudas = [],
+  liquidacion = null,
   readonly = false,
-  semana,
-  anio
 }: FilaArbitroProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [localIsPaid, setLocalIsPaid] = useState(false)
-  
+  const [localLiquidacion, setLocalLiquidacion] = useState<Liquidacion | null>(liquidacion)
+  const [showMetodoModal, setShowMetodoModal] = useState(false)
+  const [savingPago, setSavingPago] = useState(false)
+
   useEffect(() => {
-    // Si todas las designaciones están pagadas, el árbitro está pagado
-    const allPaid = designaciones.length > 0 && designaciones.every(d => d.pagado)
-    setLocalIsPaid(allPaid)
-  }, [designaciones])
+    setLocalLiquidacion(liquidacion)
+  }, [liquidacion])
 
   const supabase = createClient()
 
-  const handleTogglePagadoMasivo = async (e: React.MouseEvent) => {
-    e.stopPropagation() 
+  const localIsPaid = localLiquidacion?.estado === 'pagado'
+
+  const handleTogglePagadoMasivo = (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (readonly) return // SEGURIDAD: No permitir cambios en vista pública
-    
-    const nextStatus = !localIsPaid
-    setLocalIsPaid(nextStatus) // Update UI immediately
+    if (!localLiquidacion?.id) return // No se puede marcar pago sin cerrar la semana primero
+
+    if (localIsPaid) {
+      // Revertir a pendiente
+      void marcarPago(null)
+    } else {
+      setShowMetodoModal(true)
+    }
+  }
+
+  const marcarPago = async (metodoPago: MetodoPagoLiquidacion | null) => {
+    if (!localLiquidacion?.id) return
+    const previo = localLiquidacion
+    const optimista: Liquidacion = {
+      ...localLiquidacion,
+      estado: metodoPago ? 'pagado' : 'pendiente',
+      metodo_pago: metodoPago,
+      fecha_pago: metodoPago ? new Date().toISOString() : null,
+    }
+    setSavingPago(true)
+    setLocalLiquidacion(optimista)
 
     try {
       const { error } = await supabase
-        .from('designaciones')
-        .update({ pagado: nextStatus })
-        .eq('arbitro_id', arbitroId)
-        .eq('semana', semana)
-        .eq('anio', anio)
-      
+        .from('liquidaciones')
+        .update({
+          estado: optimista.estado,
+          metodo_pago: optimista.metodo_pago,
+          fecha_pago: optimista.fecha_pago,
+        })
+        .eq('id', localLiquidacion.id)
+
       if (error) throw error
-      toast.success(nextStatus ? `Pago registrado para ${arbitroNombre}` : `Pago pendiente para ${arbitroNombre}`)
+      toast.success(metodoPago ? `Pago registrado para ${arbitroNombre}` : `Pago pendiente para ${arbitroNombre}`)
+      setShowMetodoModal(false)
     } catch (error) {
-      setLocalIsPaid(!nextStatus) // Rollback UI if error
+      setLocalLiquidacion(previo) // Rollback UI if error
       toast.error("Error al actualizar estado de pago")
+    } finally {
+      setSavingPago(false)
     }
   }
 
   const colorAccent = "blue" // Centralizado para facilitar cambios
-  const subtotalHonorarios = designaciones.reduce((acc, d) => acc + d.monto_honorarios, 0)
-  const subtotalViaticos = designaciones.reduce((acc, d) => acc + d.monto_viatico, 0)
-  const totalDescuentos = descuentos.reduce((acc, d) => acc + d.monto, 0)
-  const totalAPagar = (subtotalHonorarios + subtotalViaticos) - totalDescuentos
-  const neto = totalAPagar; // Renamed for consistency with the provided snippet
+  // Una vez cerrada la semana, el desglose autoritativo vive en liquidaciones
+  // (incluye la deuda cobrada, que ya no se representa como un descuento más).
+  // Antes del cierre no hay liquidacion todavía: se muestra un preview calculado en el cliente.
+  const subtotalHonorarios = localLiquidacion?.subtotal_honorarios ?? designaciones.reduce((acc, d) => acc + d.monto_honorarios, 0)
+  const subtotalViaticos = localLiquidacion?.subtotal_viaticos ?? designaciones.reduce((acc, d) => acc + d.monto_viatico, 0)
+  const totalDescuentos = localLiquidacion?.total_descuentos ?? descuentos.reduce((acc, d) => acc + d.monto, 0)
+  const totalDeudaCobrada = localLiquidacion?.total_deuda_cobrada ?? 0
+  const totalAPagar = subtotalHonorarios + subtotalViaticos - totalDescuentos
+  const neto = localLiquidacion?.neto ?? totalAPagar
   const totalDeudaPendiente = deudas.reduce((acc, d) => acc + d.monto_actual, 0)
 
   if (designaciones.length === 0 && descuentos.length === 0) return null
@@ -105,29 +139,39 @@ export function FilaArbitro({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-4 flex-1 min-w-0 group">
-          <button 
+          <button
                 onClick={handleTogglePagadoMasivo}
-                disabled={readonly}
+                disabled={readonly || !localLiquidacion?.id || savingPago}
+                title={!localLiquidacion?.id ? "Cerrá la semana para poder registrar el pago" : undefined}
                 className={cn(
                   "p-2 rounded-xl transition-all shadow-sm flex items-center justify-center",
                   localIsPaid ? "bg-blue-600 text-white shadow-blue-200" : "bg-white border-2 border-zinc-100 text-zinc-300",
-                  !readonly && (localIsPaid ? "" : "hover:border-blue-200 hover:text-blue-500"),
-                  readonly && "cursor-default opacity-80"
+                  !readonly && localLiquidacion?.id && (localIsPaid ? "" : "hover:border-blue-200 hover:text-blue-500"),
+                  (readonly || !localLiquidacion?.id) && "cursor-default opacity-80"
                 )}
               >
                 {localIsPaid ? <CheckSquare className="h-5 w-5" /> : <Square className="h-5 w-5" />}
           </button>
-          
+
           <div className="flex-1 min-w-0">
             <h3 className={cn(
               "text-base sm:text-xl font-black truncate tracking-tight",
               localIsPaid ? "text-blue-800" : "text-zinc-900"
             )}>{arbitroNombre}</h3>
-            <div className="flex items-center gap-2 mt-0.5">
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse", localIsPaid ? "bg-blue-600" : "bg-blue-400")} />
                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
-                 {localIsPaid ? "Liquidación Pagada" : "Pago Pendiente"}
+                 {localIsPaid
+                   ? "Liquidación Pagada"
+                   : localLiquidacion?.id
+                     ? "Pago Pendiente"
+                     : "Pendiente de Cierre"}
                </span>
+               {localIsPaid && localLiquidacion?.metodo_pago && (
+                 <span className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full text-[9px] font-black shadow-sm border border-blue-100">
+                   {METODO_PAGO_LABEL[localLiquidacion.metodo_pago]}
+                 </span>
+               )}
                {!localIsPaid && totalDeudaPendiente > 0 && (
                  <span className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-0.5 rounded-full text-[9px] font-black animate-bounce shadow-sm border border-red-100">
                    <AlertCircle className="h-2.5 w-2.5" /> DEUDA: {formatARS(totalDeudaPendiente)}
@@ -137,7 +181,7 @@ export function FilaArbitro({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 flex-1 md:justify-end md:ml-12 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6 flex-1 md:justify-end md:ml-12 items-center">
           <div className="text-left md:text-right border-r border-zinc-50 md:border-none pr-2 md:pr-0">
             <span className="text-[7px] sm:text-[8px] uppercase font-black text-zinc-400 block tracking-[0.15em] leading-none mb-1">Honorarios</span>
             <span className="font-bold text-[10px] sm:text-xs text-zinc-600">{formatARS(subtotalHonorarios)}</span>
@@ -150,9 +194,15 @@ export function FilaArbitro({
             <span className="text-[7px] sm:text-[8px] uppercase font-black text-red-400 block tracking-[0.15em] leading-none mb-1">Dctos.</span>
             <span className="font-bold text-[10px] sm:text-xs text-red-500">-{formatARS(totalDescuentos)}</span>
           </div>
+          {totalDeudaCobrada > 0 && (
+            <div className="text-left md:text-right border-r border-zinc-50 md:border-none pr-2 md:pr-0">
+              <span className="text-[7px] sm:text-[8px] uppercase font-black text-red-400 block tracking-[0.15em] leading-none mb-1">Deuda Cobrada</span>
+              <span className="font-bold text-[10px] sm:text-xs text-red-500">-{formatARS(totalDeudaCobrada)}</span>
+            </div>
+          )}
           <div className="text-left md:text-right bg-blue-50/50 md:bg-transparent p-1.5 md:p-0 rounded-xl transition-colors group-hover:bg-blue-50">
             <span className="text-[7px] sm:text-[8px] uppercase font-black text-blue-700 block tracking-[0.15em] leading-none mb-1">Neto</span>
-            <span className="font-black text-sm sm:text-base text-blue-700">{formatARS(totalAPagar)}</span>
+            <span className="font-black text-sm sm:text-base text-blue-700">{formatARS(neto)}</span>
           </div>
         </div>
       </div>
@@ -294,6 +344,14 @@ export function FilaArbitro({
           </div>
         </div>
       )}
+
+      <ModalMetodoPago
+        arbitroNombre={arbitroNombre}
+        isOpen={showMetodoModal}
+        onClose={() => setShowMetodoModal(false)}
+        onConfirm={(metodo) => void marcarPago(metodo)}
+        loading={savingPago}
+      />
     </div>
   )
 }

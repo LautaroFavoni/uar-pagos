@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { Designacion, Descuento, Arbitro, DeudaPendiente } from "@/lib/types"
+import { Designacion, Descuento, Arbitro, DeudaPendiente, Liquidacion } from "@/lib/types"
 import { FilaArbitro } from "@/components/resumen/FilaArbitro"
 import { ModalDescuento } from "@/components/resumen/ModalDescuento"
 import { getSemanaInfo, formatARS } from "@/lib/calculos"
@@ -27,6 +27,7 @@ export default function ResumenPagosPage() {
   const [designaciones, setDesignaciones] = useState<Designacion[]>([])
   const [descuentos, setDescuentos] = useState<Descuento[]>([])
   const [deudas, setDeudas] = useState<DeudaPendiente[]>([])
+  const [liquidaciones, setLiquidaciones] = useState<Liquidacion[]>([])
   const [selectedArbitro, setSelectedArbitro] = useState<Arbitro | null>(null)
   
   const hoy = new Date()
@@ -40,8 +41,10 @@ export default function ResumenPagosPage() {
     setLoading(true)
     try {
       const [
-        { data: des }, 
-        { data: dct }
+        { data: des },
+        { data: dct },
+        { data: deu },
+        { data: liq }
       ] = await Promise.all([
         supabase
           .from('designaciones')
@@ -58,7 +61,12 @@ export default function ResumenPagosPage() {
         supabase
           .from('deudas_pendientes')
           .select('*')
-          .gt('monto_actual', 0)
+          .gt('monto_actual', 0),
+        supabase
+          .from('liquidaciones')
+          .select('*')
+          .eq('semana', semana)
+          .eq('anio', anio)
       ])
 
       if (des) {
@@ -70,16 +78,15 @@ export default function ResumenPagosPage() {
       } else {
         setDesignaciones([])
       }
-      
+
       if (dct) {
         setDescuentos(dct)
       } else {
         setDescuentos([])
       }
 
-      if (deudas) {
-        setDeudas(deudas as any)
-      }
+      setDeudas(deu ?? [])
+      setLiquidaciones(liq ?? [])
     } catch (error) {
       toast.error("Error al cargar liquidación")
     } finally {
@@ -142,64 +149,17 @@ export default function ResumenPagosPage() {
 
   const handleCerrarSemana = async () => {
     if (!confirm("¿Estás seguro de cerrar la semana? Esto marcará todo como PAGADO y LIQUIDADO.")) return
-    
+
     setClosing(true)
     try {
-      // PROCESAR COBRO DE DEUDAS AUTOMÁTICO
-      for (const arbId of arbitrosIds) {
-        const arbDesignaciones = designaciones.filter(d => d.arbitro_id === arbId)
-        const arbDescuentosExistentes = descuentos.filter(d => d.arbitro_id === arbId)
-        
-        const subtotal = arbDesignaciones.reduce((acc, d) => acc + d.total, 0)
-        const descPrevios = arbDescuentosExistentes.reduce((acc, d) => acc + d.monto, 0)
-        let netoDisponible = subtotal - descPrevios
+      // Todo el cierre (cobro de deudas + bulk update de estados + liquidaciones)
+      // corre atómicamente en una sola función Postgres.
+      const { error } = await supabase.rpc('cerrar_semana', {
+        p_semana: semana,
+        p_anio: anio,
+      })
 
-        if (netoDisponible > 0) {
-          const deudasArb = deudas.filter(d => d.arbitro_id === arbId)
-          
-          for (const deuda of deudasArb) {
-            if (netoDisponible <= 0) break
-            
-            const montoACobrar = Math.min(deuda.monto_actual, netoDisponible)
-            
-            if (montoACobrar > 0) {
-                // 1. Crear el descuento para esta semana
-                await supabase.from('descuentos').insert({
-                  arbitro_id: arbId,
-                  semana,
-                  anio,
-                  concepto: `COBRO DEUDA: ${deuda.concepto}`,
-                  monto: montoACobrar,
-                  estado: 'liquidado' // Ya nace liquidado porque estamos cerrando
-                })
-
-                // 2. Actualizar el saldo de la deuda
-                await supabase.from('deudas_pendientes')
-                  .update({ monto_actual: deuda.monto_actual - montoACobrar })
-                  .eq('id', deuda.id)
-                
-                netoDisponible -= montoACobrar
-            }
-          }
-        }
-      }
-
-      // Proceder con el cierre normal de lo que ya existía
-      const { error: err1 } = await supabase
-        .from('designaciones')
-        .update({ estado: 'pagado' })
-        .eq('semana', semana)
-        .eq('anio', anio)
-        .eq('estado', 'pendiente')
-
-      const { error: err2 } = await supabase
-        .from('descuentos')
-        .update({ estado: 'liquidado' })
-        .eq('semana', semana)
-        .eq('anio', anio)
-        .eq('estado', 'pendiente')
-
-      if (err1 || err2) throw new Error("Error al cerrar registros")
+      if (error) throw error
 
       toast.success("Semana cerrada satisfactoriamente con cobro de deudas aplicado")
       fetchData() // Recargar para ver el estado limpio
@@ -295,8 +255,7 @@ export default function ResumenPagosPage() {
                 designaciones={arbitroDesignaciones}
                 descuentos={arbitroDescuentos}
                 deudas={deudas.filter(d => d.arbitro_id === arbitroId)}
-                semana={semana}
-                anio={anio}
+                liquidacion={liquidaciones.find(l => l.arbitro_id === arbitroId) ?? null}
                 onAddDescuento={(id) => {
                   setSelectedArbitro({ id, nombre: arbitroNombre, activo: true })
                 }}
